@@ -7,9 +7,7 @@ Evolutionary Logic Learning (ELL) is an unsupervised ML algorithm that uses a tr
     expression = '((a ^ b) / (c ^ d));'
         
   
-The symbols '^' and '/' are logical connectives that correspond to conjunction and implication respectively. Each pair of opened/closed parentheses represents boundary points of a sub-expression, which may contain or be contained by other sub-expressions, giving rise to  a containment hierarchy.
-
-The propositional function can therefore be generated and executed over a given memory space:
+The symbols '^' and '/' are logical connectives that correspond to conjunction and implication respectively. Each pair of opened/closed parentheses represents boundary points of a sub-expression, which may contain or be contained by other sub-expressions, giving rise to  a containment hierarchy. The proposition is be generated from the expression and executed given a memory space:
 
     memory = {'a':1,'b':1,'c':1,'d':1}
     function = generate(expression)
