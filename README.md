@@ -19,3 +19,5 @@ The propositional function can therefore be generated and executed over a given 
 yielding the proposition's truth value:
     
     True
+
+which acts as a proof that the statement "a and b implies c and d" is an accurate model, or at least accurate given the current context.
