@@ -16,8 +16,6 @@ The propositional function can therefore be generated and executed over a given 
     function = generate(expression)
     output = function(memory)
  
-yielding the proposition's truth value:
+ yielding the proposition's truth value, which acts as proof that the expression is accurate in at least the current situation.
     
-    True
-
-which acts as a proof that the statement "a and b implies c and d" is an accurate model, or at least accurate given the current context.
+__OUTPUT:__ `True`
