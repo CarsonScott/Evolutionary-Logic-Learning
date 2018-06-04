@@ -14,4 +14,4 @@ The symbols '^' and '<' are logical connectives that correspond to conjunction a
     
     output = function(memory)
     
-The expression given above is equivalent to the following: *if a and b are true, then c and d are true.* When the functional form of an implication gets called, it tests both the premise as well as the conclusion against a set of observations, allowing us not just to see whether a given implication is applicable, but also whether the following conclusion is reliable, i.e. tends to hold true over many observations. 
+The expression given above is equivalent to the following: *if a and b are true, then c and d are true.* When the functional form of an implication gets called, it tests both the premise as well as the conclusion against a set of observations, allowing us not just to see whether a given implication is applicable, but also whether the following conclusion is reliable, i.e. tends to hold true over many observations. In this case our premise is true and our conclusion reliable, and therefore yields a truth value of 1.
