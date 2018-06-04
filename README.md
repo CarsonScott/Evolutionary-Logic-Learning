@@ -10,14 +10,11 @@ Evolutionary Logic Learning (ELL) is an unsupervised ML algorithm that uses a tr
   
 The symbols '^' and '/' are logical connectives that correspond to conjunction and implication respectively. Each pair of opened/closed parentheses represents boundary points of a sub-expression, which may contain or be contained by other sub-expressions, giving rise to  a containment hierarchy.
 
-The propositional function can therefore be generated:
+The propositional function can therefore be generated and executed over a given memory space::
 
     function = generate(expression)
-    
-And executed over a given memory space:
-
     output = function(memory)
  
- yielding a truth value as its output.
-     
-     output == True
+Yielding a truth value for the given proposition:
+
+    True
