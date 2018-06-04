@@ -14,7 +14,7 @@ The propositional function can therefore be generated and executed over a given 
 
     memory = {'a':1,'b':1,'c':1,'d':1}
     function = generate(expression)
-    output = function(M)
+    output = function(memory)
  
 yielding the proposition's truth value:
     
