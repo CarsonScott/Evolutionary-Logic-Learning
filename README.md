@@ -2,7 +2,7 @@
 
 [General Overview](https://signifiedorigins.wordpress.com/2018/06/03/1024/)
 
-Evolutionary Logic Learning (ELL) is an unsupervised ML algorithm that uses a trial-and-error-based approach to learning recursive propositional functions. Each propostion is given by an expression, or a sentence in a formal language that, when interpreted, is said to be equivalent to a propositional function, which is either derived from or produces the expression depending on which representation came first. Regardless, any valid propositional function can be translated into linguistic form and vice-versa, providing both implicit and explicit lens from which to view a given proposition.   
+Evolutionary Logic Learning (ELL) is an unsupervised ML algorithm that uses a trial-and-error-based approach to learning recursive propositional functions. Each propostion is given by an expression, or a sentence in a formal language that, when interpreted, is said to be equivalent to a propositional function, which is either derived from or produces the expression depending on which representation comes first. In other words, any valid propositional function can be translated to a linguistic form and back, providing an implicit as well as explicit viewpoint from which to judge the proposition.   
 
     
     expression = '((a ^ b) / (c ^ d));'
