@@ -1,123 +1,182 @@
 from lib.functions import *
+from lib.relations import *
 from lib.constraints import *
 from lib.util import *
 
-class Template(Dict):
+def product(X):
+	y = X[0]
+	for i in range(1, len(X)):
+		y *= X[i]
+	return y
+
+def is_template(object):
+	return isinstance(object, Dict) and equivalent(object.keys(), ['type', 'data'])
+
+def template(type=None, data=None):
+	return Dict({'type':type, 'data':data})
+
+def association(group=None):
+	output = template('association')
+	output['group'] = group
+	return output
+
+def implication(premise=None, conclusion=None):
+	output = template('implication')
+	output['premise'] = premise
+	output['conclusion'] = conclusion
+	return output
+
+def create(type, data):
+	return template(type, data)
+
+def convert(template):
+	type = template['type']
+	data = template['data']
+	for i in range(len(data)):
+		if is_template(data[i]):
+			data[i] = convert(data[i])
+	if type == 'association':
+		return Association(data)
+	if type == 'implication':
+		return Implication(data[0], data[1])
+
+class Proposition:
+	def __call__(self, memory):
+		return
+
+class Truth(Proposition):
+	def __init__(self, variable):
+		self.variable = variable
+	def __call__(self, memory):
+		return self.variable in memory.keys() and memory[self.variable] == 1
+
+class Implication(Proposition):
+	def __init__(self, premise, conclusion):
+		self.premise = premise
+		self.conclusion = conclusion
+	def __call__(self, memory):
+		premise = self.premise
+		if not isinstance(self.premise, Proposition):
+			premise = Truth(premise)
+		output = None
+		if premise(memory):
+			conclusion = self.conclusion
+			if not isinstance(self.conclusion, Proposition):
+				conclusion = Truth(conclusion)
+			output = conclusion(memory)
+		return output
+
+class Association(Proposition):
+	def __init__(self, group):
+		self.group = group
+	def __call__(self, memory):
+		group = self.group
+		for i in range(len(group)):
+			data = group[i]
+			if not isinstance(data, Proposition):
+				data = Truth(data)
+			group[i] = data(memory)
+		output = product(group)
+		return bool(output)
+
+def express(proposition, marker=';'):
+	string = '('
+	if isinstance(proposition, Truth):
+		string += str(proposition.variable)
+
+	elif isinstance(proposition, Implication):
+		premise = proposition.premise
+		conclusion = proposition.conclusion
+		if isinstance(premise, Proposition):
+			premise = express(premise, '')
+		if isinstance(conclusion, Proposition):
+			conclusion = express(conclusion, '')
+		string += str(premise) + ' / ' + str(conclusion)
+
+	elif isinstance(proposition, Association):
+		group = proposition.group
+		if isinstance(group[0], Proposition):
+			group[0] = express(group[0], '')
+		string += str(group[0])
+		for i in range(1, len(group)):
+			string += ' ^ '
+			data = group[i]
+			if isinstance(data, Proposition):
+				data = express(data, '')
+			string += str(data)
+	return string + ')' + marker
+
+class EmbeddedList(list):
+	def __init__(self, size, value=None):
+		for i in range(size):
+			self.append(value)
+	def expand(self, index):
+		self[index] = EmbeddedList(1, self[index])
+
+class ExpressionTree(EmbeddedList):
 	def __init__(self):
-		self.labels = Dict()
+		super().__init__(0)
+		self.state = 0
 
-	def add_constraint(self, label, key, constraint):
-		C = self[-1]
-		if label not in C.keys():
-			C[label] = Dict()
+	def expand(self, index):
+		self[index] = ExpressionTree()
 
-		if key not in C[label].keys():
-			C[label][key] = []
+	def update(self, character):
+		if len(self) == 0:
+			self.append(None)
 
-		C[label][key].append(constraint)
-		self[-1] = C 
-	
-	def store(self, label, values):
-		indices = self.retrieve(label)
-		if isinstance(values, list):
-			for i in range(len(indices)):
-				index = indices[i]
-				self[index] = values[i]
-		elif len(indices) > 0:
-			index = indices[0]
-			self[index] = values
+		if character == '(':
+			if self.state == 0:
+				if self[len(self)-1] != None:
+					self.append(None)
+				self[len(self)-1] = ExpressionTree()
+				self.state = 1
+			else:
+				y = self[len(self)-1].update(character)
+				if y != None:self.state = 0
 
-	def append(self, value):
-		index = len(self)
-		self.assign(index, value)
-	
-	def assign(self, index, label):
-		if index not in self.keys():
-			self[index] = None
-		if label not in self.labels.keys():
-			self.labels[label] = []
-		self.labels[label].append(index)
-	
-	def retrieve(self, label):
-		if label in self.labels.keys():
-			return self.labels[label]
-		else:raise Exception(str(label) + ' not found') 
-	
-	def translate(self, indices):
-		output = []
-		if len(indices) == 1:
-			index = indices[0]
-			output = self[index]
-		else:
-			for i in indices:
-				output.append(self[i])
-		return output
-	
-	def compile(self):
-		labels = Dict()
-		# labels = [None for i in range(len(self))]
-		for i in self.labels.keys():
-			for j in self.labels[i]:
-				labels[j] = i
-		return labels
-	
-	def generate(self):
-		instance = Template()
-		for i in self.labels.keys():
-			instance[i] = Dict()
-			for j in range(len(self.labels[i])):
-				index = self.labels[i][j]
-				instance[i][j] = self[index]
-		return instance
-	
-	def compute(self, values):
-		indices = self.retrieve('variable')
-		c = 0
-		for i in indices:
-			self[i] = values[c]
-			c += 1
-		self.generate()
-	
-	def validity(self, label):
-		ratings = Dict()
-		for i in self.retrieve(label):
-			ratings[i] = 0
-			if label in self[-1].keys():
-				for constraint in self[-1][label]:
-					ratings[i] += 1/len(self[-1][label])
-			else:ratings[i] = 1
-		output = sum(list(ratings.values()))
-		if len(ratings) > 0:
-			output /= len(ratings)
-		return output
+		elif character == ')':
+			if self.state == 0:return self
+			else:
+				y = self[len(self)-1].update(character)
+				if y != None:self.state = 0
 
-	def restrict(self, label, constraint):
-		C = self[-1]
-		if label not in C.keys():
-			C[label] = []
-		C[label].append(constraint)
-		self[-1] = C
-	
-	def utility(self):
-		rating = 0
-		for i in self.labels.keys():
-			rating += self.rate(i)
-		if len(self.labels.keys()) > 0:
-			rating /= len(self.labels.keys())
-		else:rating = 1
-		return rating
-	
-	def info(self, type):
-		info = Dict()
-		info['type'] = type
-		info['variables'] = Dict()
-		info['constraints'] = Dict()
-		for i in self.retrieve(type):
-			info['variables'][i] = self[i]
-		if type in self[-1].keys():
-			info['constraints'] = self[-1][type]
-		return info
+		elif character == ';':
+			return self
 
-	def get(self, label):
-		if label in self.labels.keys():
-			return self.translate(self.retrieve(label))
+		elif character != ' ':
+			if self.state == 0:
+				if len(self) == 0 or self[len(self)-1] != None:
+					self.append(character)
+				self[len(self)-1] = character
+			else:
+				y = self[len(self)-1].update(character)
+				if y != None:self.state = 0
+
+	def parse(self, expression):
+		for i in range(len(expression)):
+			character = expression[i]
+			self.update(character)
+		return self
+
+def encode(tree):
+	for i in range(len(tree)):
+		if isinstance(tree[i], ExpressionTree):
+			tree[i] = encode(tree[i])
+	if len(tree) == 1:
+		return tree[0]
+	else:
+		a,r,b = tree
+		if r == '^':
+			r = 'association'
+		if r == '/':
+			r = 'implication'
+		x = [a, b]
+		return template(r, x)
+
+def generate(expression):
+	tree = ExpressionTree()
+	tree.parse(expression)
+	template = encode(tree)
+	function = convert(template)
+	return function
