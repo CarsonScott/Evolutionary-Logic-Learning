@@ -1,3 +1,23 @@
 # Evolutionary Logic Learning
 
-[Overview](https://signifiedorigins.wordpress.com/2018/06/03/1024/)
+[General Overview](https://signifiedorigins.wordpress.com/2018/06/03/1024/)
+
+Evolutionary Logic Learning (ELL) is an unsupervised ML algorithm that uses a trial-and-error-based approach to learning recursive propositional functions. Each propostion is given by an expression, or a sentence in a formal language that, when interpreted, is said to be equivalent to a propositional function, which is either derived from or produces the expression depending on which representation came first. Regardless, any valid propositional function can be translated into linguistic form and vice-versa, providing both implicit and explicit lens from which to view a given proposition.   
+
+
+    E = '((a ^ b) / (c ^ d));'
+    
+  
+The symbols '^' and '/' are logical connectives that correspond to conjunction and implication respectively. Each pair of opened/closed parentheses represents boundary points of a sub-expression, which may contain or be contained by other sub-expressions, giving rise to  a containment hierarchy.
+
+The propositional function can therefore be generated:
+
+    function = generate(expression)
+    
+And executed over a given memory space:
+
+    output = function(memory)
+ 
+ yielding a truth value as its output.
+     
+     output == True
