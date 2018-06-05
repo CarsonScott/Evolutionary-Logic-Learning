@@ -1,4 +1,6 @@
-RELA is an intelligent agent architecture that emphasizes the importance of [high-order cognitition](http://condor.depaul.edu/cwren/courses/other/outmn444/ch7think.htm) 
+# Rational Adaptive Learning Agent
+
+RELA is an intelligent agent architecture that emphasizes the importance of [high-order cognitition](http://condor.depaul.edu/cwren/courses/other/outmn444/ch7think.htm) in humans.
 
 ### 1. Expressions
 
