@@ -17,11 +17,11 @@ The expression given above is equivalent to the following: *if a and b are true,
 
 We can also build hierarchical structures with functions and translate them into expressions. All propositional functions are created using a constructor, which takes a label along with a data set and uses its elements to fill certain “slots” which are necessary to initialize a function of the specific type given by the label. For example, an implication function has two main elements, a premise and conclusion, which are extracted by the constructor and assigned to the new function. 
 
-	A = create('association', ['a', 'b'])
-	B = create('association', ['c', 'd'])
-	C = create('implication', [A, B])
+    A = create('association', ['a', 'b'])
+    B = create('association', ['c', 'd'])
+    C = create('implication', [A, B])
 
-	function = convert(C)
+    function = convert(C)
     expression = express(function)
 
-The result is an expression identical to one we started with in the last example. the function manually constructed here is also equivalent to the derived function in the previous layer.
+The function is equivalent to the previous example's function, and the same applies for the expression. This shows how we are able to construct and seemlessly move between symbolic and structural representations, a central theme that is very important to the learning and adaptation processes of the system.
