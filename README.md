@@ -11,9 +11,17 @@ The symbols '^' and '<' are logical connectives that correspond to conjunction a
     memory = {'a':1,'b':1,'c':1,'d':1}
     
     function = generate(expression)
-    
     output = function(memory)
     
 The expression given above is equivalent to the following: *if a and b are true, then c and d are true.* When the functional form of an implication gets called, it tests both the premise as well as the conclusion against a set of observations, allowing us not just to see whether a given implication is applicable, but also whether the following conclusion is reliable, i.e. tends to hold true over many observations. In this case our premise is true and our conclusion reliable, and therefore yields a truth value of 1.
 
 We can also build hierarchical structures with functions and translate them into expressions. All propositional functions are created using a constructor, which takes a label along with a data set and uses its elements to fill certain “slots” which are necessary to initialize a function of the specific type given by the label. For example, an implication function has two main elements, a premise and conclusion, which are extracted by the constructor and assigned to the new function. 
+
+	A = create('association', ['a', 'b'])
+	B = create('association', ['c', 'd'])
+	C = create('implication', [A, B])
+
+	function = convert(C)
+    expression = express(function)
+
+The result is an expression identical to one we started with in the last example. the function manually constructed here is also equivalent to the derived function in the previous layer.
