@@ -24,4 +24,4 @@ We can also build hierarchical structures with functions and translate them into
     function = convert(C)
     expression = express(function)
 
-The function is equivalent to the previous example's function, and the same applies for the expression. This shows how we are able to construct and seemlessly move between symbolic and structural representations, a central theme that is very important to the learning and adaptation processes of the system.
+The function is equivalent to the previous example's function, and the same applies for the expression. This shows how we are able to construct and seemlessly move between symbolic and functional representations, a central theme that is important to the learning and adaptation processes of the system.
