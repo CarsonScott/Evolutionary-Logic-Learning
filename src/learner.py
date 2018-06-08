@@ -119,7 +119,7 @@ class Learner:
 		for i in self.strengths.keys():
 			strength = self.strengths[i]
 			
-			if strength >= self.threshold:
+			if strength > self.threshold:
 				if i not in self.pattern:
 					self.pattern.append(i)
 					self.append(i)
