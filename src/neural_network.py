@@ -1,7 +1,6 @@
 from lib.relations import *
-import math
 from lib.util import *
-
+import math
 
 def multiply(X, Y):
 	return [X[i] * Y[i] for i in range(len(X))]
@@ -27,60 +26,119 @@ class NeuralNetwork(list):
 
 	def init(self, shape):
 		i = 0
-		for s in shape:
+		for i in range(len(shape)):
+			s = shape[i]
 			x = [0 for i in range(s)]
 			self.append(x)
 			self.deltas.append(x)
-			self.biases.append(x)
 			self.drives.append(x)
+			self.biases.append(x)
+
+		self.weights = []
 		for i in range(len(self)):
-			self.weights.append([]) 
+			self.weights.append([])
 			for j in range(len(self[i])):
-				self.weights[i].append([rr(100)/100 for k in range(len(self[i-1]))])
+				self.weights[i].append([])
+				for k in range(len(self[i-1])):
+					self.weights[i][j].append(rr(100)/100)
 
 	def compute_outputs(self, level, X):
 		B = self.biases[level]
-		W = self.weights[level]
 		Y = []
 		for i in range(len(self[level])):
-			y = sum(multiply(W[i], X))
-			b = B[0]
+			b = self.biases[level][i]
+			y = 0
+			for j in range(len(self[level-1])):
+				w = self.weights[level][i][j]
+				y += self[level-1][j] * w
 			Y.append(self.activation(y + b))
 		return Y
 
-	def compute_biases(self, level, X):
-		for i in range(len(self[level])):
-			W = self.weights[level][i]
-			B = []
-			b = 0
-			for j in range(len(W)):
-				w = W[j]
-				x = X[j]
-				b += w * x
-			B.append(b)
+	def compute_biases(self):
+		B = [[-1 for j in range(len(self[i]))] for i in range(len(self))]
+		for level in range(len(self.weights)-1):
+
+			for i in range(len(self[level+1])):
+				d = self.drives[level+1][i]
+				y = self[level+1][i]
+				W = self.weights[level+1][i]
+				for j in range(len(self[level])):
+					w = self.weights[level+1][i][j]
+					
+					if level == 0:
+						x = 1
+					else:
+						x = self[level][j]
+					g = self.drives[level+1][i]
+					if y != 0:
+					#	if g*w != 0:
+						derivative = d*y*w#(g * w / y) * d
+						B[level][j] += derivative 
+
+		for i in range(len(B)):
+			for j in range(len(B[i])):
+				B[i][j] = math.tanh(B[i][j])
+		self.biases = B
 		return B
 
-	def compute_weights(self, level):
-		W = []
-		for i in range(len(self[level])):
-			W.append(self.weights[level][i])
-			Y = []
-			for j in range(len(W)):
-				gj = self.drives[level-1][j]
-				yi = self[level][i]
-				dyj = self.deltas[level-1][j]
-				r = -gj
-				dw = r * yi * dyj
-				W[i][j] += dw * self.lrate
-		return W
+	def train(self, reward):
+		for level in range(1, len(self)):
+			total_output = sum(self[level])
+			W = []
+			for i in range(len(self.weights[level])):
+				W.append([])
+				for j in range(len(self.weights[level][i])):
+					gi = self.drives[level][i]
+					gj = self.drives[level-1][j]
+					yi = self[level][i]
+					yj = self[level-1][j]
+					wij = self.weights[level][i][j]
+
+					xj = yj * wij
+					if gj != 0:
+						yj *= gj
+
+					dy = yi / total_output
+					if reward != 0:
+						dg = dy / reward * self.lrate
+
+						W[i].append(gi + dg)
+
+		self.drives = W
+
+	def compute_drives(self, level):
+		for i in range(len(self.weights[level])):
+			gi = 0
+			for j in range(len(self.weights[level][i])):
+				gi += self.drives[level-1][j] * self.weights[level][i][j]
+			self.drives[level][i] = math.tanh(gi)# += #math.tanh(gi)
+
+	def compute_weights(self):
+		W = self.weights
+		for level in range(len(self.weights)):
+			for i in range(len(self[level])):
+				Y = []
+				gi = 0
+				for j in range(len(self[level-1])):
+					yi = self[level][i]
+					yj = self[level-1][j]
+					dyi = self.deltas[level][i]
+					dyj = self.deltas[level-1][j]
+					gj = self.drives[level-1][j]
+
+					dw = dyi * dyj 
+					if gj != 0: dw *= gj
+
+					W[level][i][j] += dw * self.lrate
+		self.weights = W
 
 	def activation(self, x):
-		return softmax(x)
+		return math.tanh(x)
 
 	def compute_deltas(self, level, V):
 		X = self[level]
 		D = []
-		for i in range(len(X)):
+		for i in range(len(V)):
 			v = V[i]
 			x = X[i]
 			d = v-x
@@ -88,28 +146,20 @@ class NeuralNetwork(list):
 		return D
 
 	def compute(self, X):
+		self.compute_biases()	
+		self.compute_weights()
+
 		Y = []
-		self[0] = X
+		B = self.biases[0]
+		for i in range(len(B)):
+			self[0][i] = X[i] + B[i]
+
+
 		for i in range(1, len(self)):
 			X = self[i-1]
-			b = self.compute_biases(i, X)
 			y = self.compute_outputs(i, X)
 			d = self.compute_deltas(i, y)
-			w = self.compute_weights(i)
 			self[i] = x
-			self.biases[i] = b
 			self.deltas[i] = d
-			self.weights[i] = w
-			Y.append(y)
+			Y = y
 		return Y
-
-
-nn=NeuralNetwork([10, 10, 10])
-
-X = [[0, 1, 0, 0, 1, 1, 0, 1, 1, 0],
-	 [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
-	 [0, 0, 1, 1, 1, 0, 0, 1, 0, 1],
-	 [1, 0, 0, 1, 0, 0, 0, 1, 1, 1]]
-
-for x in X:
-	print(nn.compute(x))

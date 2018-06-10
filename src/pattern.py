@@ -23,6 +23,8 @@ class Proposition:
 		self.create()
 		return self.function(input)
 
+Proposition('(a conjunction b);')
+
 class Pattern(list):
 	def __init__(self, propositions=[]):
 		for p in propositions:
