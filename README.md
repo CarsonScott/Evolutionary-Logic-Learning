@@ -31,7 +31,7 @@ We can also build hierarchical structures with functions and translate them into
 
     premise = create('conjunction', ['a', 'b'])
     conclusion = create('conjunction', ['c', 'd'])
-    template = create('implication', [left, right])
+    template = create('implication', [premise, conclusion])
 
     function = convert(template)
     expression = express(function)
@@ -41,7 +41,7 @@ The function is equivalent to the previous example's function, and the same appl
 
 ### Construction System
 
-the systems learns to create by making observations of matrices that represent the identity of a given input. a matrix representing the possibility of a given input declares which elements must be present in order for a function to be valid. relationships between variables are defined by functions. identity and possibility matrices relate to one another in shape, that is, they have the same number of rows/vertices. shape equivalence allows for new matrices to be calculated by relating variables in difference ways. value equivalence, index equivalence, and type equivalence are the three core identity functions that produce an identity matrix for a given value.
+The development of propositional structures occurs automatically, by making repeated observations of identity matrices that represent patterns of input, and matrices representing the requirements of each input in order for a function to be valid. relationships between variables are defined by functions. identity and requirement matrices relate to one another in shape, that is, they have the same number of rows/vertices. shape equivalence allows for new matrices to be calculated by relating variables in difference ways. value equivalence, index equivalence, and type equivalence are the three core identity functions that produce an identity matrix for a given value.
 
 
 matrix:
