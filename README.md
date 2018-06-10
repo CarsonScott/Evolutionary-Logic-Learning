@@ -1,6 +1,6 @@
 # Evolutionary Logic Learning
 
-Evolutionary Logic Learning is an intelligent agent architecture that assumes lanuage as fundamentally being tied to the motivational processes of lower-level cognition. Propositions defined by a linguistic structure feed into neural networks and change the goal characteristics (that is, variables determining whether certain outcomes are desirable), which alters the production of actions in order to move the current state toward some goal.
+Evolutionary Meta-Logical Learning is an intelligent agent architecture that constructs high-level linguistic models to control the motivational and attentional inputs at lower-level neurons. high-level learning uses symbolic reasoning and a meta-logical language to adaptively generate more efficient structures by effectively altering the way in which it builds them. 
 
 ### Reinforcement System 
 
