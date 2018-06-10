@@ -1,6 +1,6 @@
 # Evolutionary Logic Learning
 
-Evolutionary Logic Learning is an intelligent agent architecture that proposes lanuage as fundamentally tied to the motivational processes of low-level cognitive systems. Propositions defined by a linguistic structure feed into neural networks and change the goal characteristics (that is, variables determining whether certain outcomes are desirable), which alters the production of actions in order to move the current state toward some goal.
+Evolutionary Logic Learning is an intelligent agent architecture that assumes lanuage as fundamentally being tied to the motivational processes of lower-level cognition. Propositions defined by a linguistic structure feed into neural networks and change the goal characteristics (that is, variables determining whether certain outcomes are desirable), which alters the production of actions in order to move the current state toward some goal.
 
 ### Reinforcement System 
 
