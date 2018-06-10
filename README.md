@@ -39,4 +39,3 @@ We can also build hierarchical structures with functions and translate them into
 The function is equivalent to the previous example's function, and the same applies for the expression. This shows how we are able to construct and easily move between symbolic and functional representations, a central theme that is important to the learning and adaptation processes of the system.
 
 
-### Composite System
