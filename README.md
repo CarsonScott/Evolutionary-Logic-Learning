@@ -39,3 +39,93 @@ We can also build hierarchical structures with functions and translate them into
 The function is equivalent to the previous example's function, and the same applies for the expression. This shows how we are able to construct and easily move between symbolic and functional representations, a central theme that is important to the learning and adaptation processes of the system.
 
 
+### Construction System
+
+the systems learns to create by making observations of matrices that represent the identity of a given input. a matrix representing the possibility of a given input declares which elements must be present in order for a function to be valid. relationships between variables are defined by functions. identity and possibility matrices relate to one another in shape, that is, they have the same number of rows/vertices. shape equivalence allows for new matrices to be calculated by relating variables in difference ways. value equivalence, index equivalence, and type equivalence are the three core identity functions that produce an identity matrix for a given value.
+
+
+matrix:
+    
+    shape equivalence
+
+variable:
+
+    type equivalence 
+    value equivalence
+    index equivalence
+
+
+each form of equivalence results in a set of functions which, being declared valid, become available as an option to relate groups of variables. in other words, the possibilities that arise from an observation are related to an inherent validity given by the preprogrammed rules of inference. over time, the possibility matrices are learned such that observations of particular inputs give rise to the automatic retrieval of a certain pattern stored in memory. this is a learned inference rule whose validity is not inherent, in that it may be proven wrong given enough failed attempts, i.e. applications of inference in which the assumption led to error.
+
+sets of relations over a given input are joined to form a generalization of the original pattern. by representing patterns in terms of relations, we reduce the calculations performed when testing its existence. only the variables in the original which exist as an input to a relation need to be stored in the new pattern, thereby reducing the input to a characteristic model. construction of a new pattern is driven by statistical calculations over groups of examples. decisions are based on probability spaces with assigned boundaries that determine subgrouping, allowing examples to be analyzed in terms of their model, 
+
+identity matrices produced for high level patterns are given by rules, just like the previous level except for the fact that they are not necessarily true, and therefore fail under certain circumstances not unaccounted for by the current model. patterns are learned in a two step process: first, frequent groups of variables observed by the system over time are generated and stored in memory as a cluster. the subset of elements in a cluster then become subject to tests by the construction process, in which different computations are made both observational and behavioral, in which the former constitutes measurements on the subspace, and the latter involves potential relations between elements of the subspace. measurement naturally gives rise to consideration of potential actions,  due to the stream of knowledge produced by the inference rules, which yield specific relations in response to certain observed measurements on members of a group being compared.  
+
+
+Equivalence Functions
+    to_all (equal_to, to_all(get_type, X))  # Type equivalence
+    to_all (equal_to, to_all(get_value, X)) # Value equivalence
+    to_all (equal_to, to_all(get_index, X)) # Index equivalence
+
+
+
+array (4 x 1), all equal to 0
+
+    X = 4:0
+    X = {0,0,0,0}
+
+array with shape of X, all equal to 1
+
+    Y = X:1
+    Y = {1,1,1,1}
+
+array with identity of X
+
+    Z = :X
+    Z = {0,0,0,0}
+
+array with identity of X, shape of 2
+
+    H = 2:X
+    H = {0,0}
+
+array with joint identity of X and Y
+
+    G = X+Y
+    G = {0,0,0,0,1,1,1,1}
+
+matrix (X by Y)
+    
+    M = X:Y
+      = {{1,1,1,1}, 
+         {1,1,1,1}, 
+         {1,1,1,1}, 
+         {1,1,1,1}}
+
+
+operations
+
+    :X (identity of X)
+    X: (shape of X)
+    X+Y (union of X and Y)
+    X:Y (matrix of X by Y)
+    X~Y (congruence of X and Y)
+    X=Y (equivalence of X and Y)
+    X-Y (difference between X and Y)
+    X/Y (overlap between X and Y)
+    
+
+relations
+
+    X ~ Y (shape)
+    X = Y (value)
+    X / Y (intersection)
+    X + Y (union)
+    X - Y (compliment)
+    
+
+functions
+
+    X = {1,0,0,1}
+    Y = X:Not(X)
+    Y = {0,1,1,0}
