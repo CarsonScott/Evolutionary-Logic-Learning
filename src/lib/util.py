@@ -1,8 +1,17 @@
 from goodata import Dict
 from lib.types import *
 from lib.functions import *
+import numpy as np
 from random import randrange as rr
+import math 
 
+def softmax(x):
+    return math.log(1 + np.exp(x))
+def logistic(x):
+      return 1 / (1 + np.exp(-x))
+def gaussian(x, height=1, center=0, deviation=1):
+    return height * np.exp(- np.power(x-center, 2) / np.power(2*deviation, 2))
+    
 def sort(d):
     if isinstance(d, dict):
         keys = list(d.keys())

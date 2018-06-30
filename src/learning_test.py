@@ -1,13 +1,13 @@
 from motivator import *
 from recognizer import *
 
-patterns = [
+p = [
 	Proposition('(0 | 0);'),
 	Proposition('(1 | 1);'),
 	Proposition('(2 | 2);'),
 	Proposition('(3 | 3);'),
 	Proposition('(4 | 4);')]
-m = Motivator(patterns, 1)
+m = Motivator(p, 1)
 
 X = [
 	{'0': True,'1': False,'2': False,'3': False, '4':False},

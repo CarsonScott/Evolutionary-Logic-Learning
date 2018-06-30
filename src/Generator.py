@@ -90,8 +90,8 @@ class Memory(list):
 		return output
 
 class Generator(Memory):
-	def __init__(self, size, compute):
-		self.function = compute
+	def __init__(self, size):
+		# self.function = compute
 		self.capacity = size
 		self.history = [None for i in range(size)]
 		self.input = None
@@ -108,10 +108,24 @@ class Generator(Memory):
 		self.iteration += 1
 		return self.output
 
-	def update(self):
+	def update(self, input):
 		if is_type(self.current, Generator):
 			self.state = 1
 		else:self.state = 0
+
+
+		if self.input == ' ' or len(self.history) == 0:
+			self.history.append(Generator(0))
+			output = self.history
+		elif self.input == ';':
+			output = self.history
+			self.history = []
+		else:
+			self.history[len(self.history)-1].update(self.input)
+			output = self.history
+		return output
+		
+
 
 	def store(self):
 		if self.state == 1:
@@ -134,7 +148,7 @@ class Generator(Memory):
 			self.current = self.output
 
 def f1(generator):
-	if are_equal(to_set(get_size(generator.history), generator.capacity)):
+	if all_equal(to_set(get_size(generator.history), generator.capacity)):
 		names = to_all(generator.history, get_name)
 		types = union(names, names)
 
@@ -172,7 +186,7 @@ def to_set(*all):
 		outputs.append(x)
 	return outputs
 
-def are_equal(inputs):
+def all_equal(inputs):
 	p = inputs[0]
 	for x in inputs:
 		if x != p:
@@ -197,3 +211,11 @@ def all_to(input, functions):
 	for f in functions:
 		outputs.append(f(input))
 	return outputs
+
+
+g = Generator(0)
+
+
+X = 'a and b; c and d;'
+for i in range(len(X)):
+	print(g.update(X[i]))

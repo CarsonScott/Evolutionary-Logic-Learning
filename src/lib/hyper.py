@@ -92,3 +92,4 @@ class Object(Dict):
 		self.set_dependence(key)
 		for index in data:
 			self.set_dependence(index, key, type)
+

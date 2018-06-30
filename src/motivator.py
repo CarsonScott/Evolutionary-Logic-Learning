@@ -12,6 +12,7 @@ class Motivator(System):
 
 	def __init__(self, patterns=[], delay=1):
 		super().__init__()
+		self.patterns = []
 		self.goals = []
 		self.ratings = []
 		self.biases = []

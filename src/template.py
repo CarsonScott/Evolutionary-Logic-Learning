@@ -62,6 +62,14 @@ def convert(template):
 	for i in range(len(data)):
 		if is_template(data[i]):
 			data[i] = convert(data[i])
+		else:
+			try:
+				if int(data[i]) == float(data[i]):
+					data[i] = int(data[i])
+				else:
+					data[i] = float(data[i])
+			except:
+				data[i] = data[i]
 
 	if type in CONNECTIVE_NAMES:
 		index = CONNECTIVE_NAMES.index(type)
@@ -124,6 +132,19 @@ CONNECTIVE_SYMBOLS = ['^', '|', '<']
 CONNECTIVE_NAMES = ['conjunction', 'disjunction', 'implication']
 CONNECTIVE_FUNCTIONS = [Conjunction, Disjunction, Implication]
 
+def initialize(connectives):
+	connective_names = []
+	connective_symbols = []
+	connective_functions = []
+	keys = list(connectives.keys())
+	for i in keys:
+		name = i
+		symbol = connectives[i]['symbol']
+		function = connectives[i]['function']
+		connective_names.append(name)
+		connective_symbols.append(symbol)
+		connective_functions.append(function)
+	return connective_names, connective_symbols, connective_functions
 
 def express(proposition, marker=';'):
 	string = '('
@@ -351,32 +372,32 @@ class Group(Dict):
 		return y
 		
 
-keys = ['a', 'b', 'c', 'd'] 
-space = ProbabilitySpace(keys)
-joint = RelationalMatrix(keys)
+# keys = ['a', 'b', 'c', 'd'] 
+# space = ProbabilitySpace(keys)
+# joint = RelationalMatrix(keys)
 
-group = Group(keys)
+# group = Group(keys)
 
-X = [['a', 'b', 'c'],
-	 ['a', 'c'],
-	 ['b', 'd']]
+# X = [['a', 'b', 'c'],
+# 	 ['a', 'c'],
+# 	 ['b', 'd']]
 
-c = 0
-for i in range(50):
-	x = X[c]
-	c += 1
-	if c >= len(X): 
-		c = 0
-	group.train(x)
+# c = 0
+# for i in range(50):
+# 	x = X[c]
+# 	c += 1
+# 	if c >= len(X): 
+# 		c = 0
+# 	group.train(x)
 
-group.compute()
-print(group.get('a', 'b'))
+# group.compute()
+# print(group.get('a', 'b'))
 
-memory = {'a':0, 'b':1, 'c':0,'d':1}
+memory = {'a':0, 'b':1, 'c':1,'d':1}
 expression = '((a | b) < (c ^ d));'
 function = generate(expression)
 output = function(memory)
-print(output)
+# print(output)
 
 
 def train(inputs, outputs, rules, examples):
@@ -396,23 +417,23 @@ def train(inputs, outputs, rules, examples):
 	return scores
 
 
-rules = []
+# rules = []
 
-inputs  = [0,1,2]
-outputs = []
+# inputs  = [0,1,2]
+# outputs = []
 
-examples = []
-for i in range(10):
-	example = Dict()
-	for j in range(len(inputs)):
-		example[j] = 0
-	for j in range(2):
-		example[rr(len(example))] = 1
-	examples.append(example)
+# examples = []
+# for i in range(10):
+# 	example = Dict()
+# 	for j in range(len(inputs)):
+# 		example[j] = 0
+# 	for j in range(2):
+# 		example[rr(len(example))] = 1
+# 	examples.append(example)
 
-	active = [rr(len(inputs)) for j in range(2)]
-	rules.append(create('conjunction', active))
-	outputs.append(i)
+# 	active = [rr(len(inputs)) for j in range(2)]
+# 	rules.append(create('conjunction', active))
+# 	outputs.append(i)
 
-y = train(inputs, outputs, rules, examples)
-print(y)
+# y = train(inputs, outputs, rules, examples)
+# print(y)

@@ -1,4 +1,6 @@
 from template import addition, create, generate, express, ExpressionTree
+from Generator import *
+from Matrix import *
 from goodata import Dict
 from random import randrange as rr
 from lib.relations import *
@@ -23,8 +25,6 @@ class Proposition:
 		self.create()
 		return self.function(input)
 
-Proposition('(a conjunction b);')
-
 class Pattern(list):
 	def __init__(self, propositions=[]):
 		for p in propositions:
@@ -38,25 +38,70 @@ class Pattern(list):
 		return len(self)
 
 class System:
-	def __init__(self, patterns=[]):
-		self.patterns = patterns
+	def __init__(self):
+		self.patterns = Dict()
 		self.database = Dict()
-		for i in range(len(self.patterns)):
-			self.add(self.patterns[i])
+		self.history = list()
+		self.counter = 0
+		symbols = ['matrix', 'size', 'union', 'intersection', 'compliment', 'equivalent', 'containment', 'disjoint']
+		functions = [Matrix, len, union, intersection, compliment, equivalent, containment, disjoint]
+		inputs = ['list', 'list', 'list', 'list', 'list', 'list', 'list', 'list']
+		outputs = ['list', 'int', 'list', 'list', 'list', 'bool', 'bool', 'bool']
+		for i in range(len(functions)):
+			self.patterns[symbols[i]] = functions[i]
+			self.database[symbols[i]] = Dict()
+			self.database[symbols[i]]['types'] = [inputs[i], outputs[i]]
+		self.relations = symbols
+
+	def type(self, i):
+		return get_name(self.patterns[i])
+
 	def size(self):
 		return len(self.patterns)
-	def add(self, pattern):
-		index = self.size()
-		self.patterns.append(pattern)
+
+	def add(self, pattern, key=None):
+		if key == None:
+			index = self.counter
+			self.counter += 1
+		else:
+			index = key
+		self.patterns[index] = pattern
 		self.database[index] = Dict()
-	def combine(self, I):
-		P = []
-		for i in I:
-			P = union(P, p)
-		return Pattern(p)
-	def compare(self, i, j):
-		P = intersection(self.patterns[i], self.patterns[j])
-		return Pattern(P)
+
+	def compute(self, relation, inputs):
+		i,j = None,None
+		if len(inputs) >= 1:
+			i = inputs[0]
+		if len(inputs) >= 2:
+			j = inputs[1]
+
+		f = self.patterns[relation]
+		xi,xj = None,None
+		if i != None:xi = self.patterns[i]
+		if j != None:xj = self.patterns[j]
+
+		xtypes = self.database[relation]['types'][0]
+		if xi != None:
+			if (xtypes != None and get_name(xi) == xtypes) or xtypes == None:
+				if xj != None:
+					if (xtypes != None and get_name(xj) == xtypes) or xtypes == None:
+						return f(xi, xj)
+				return f(xi)
+		return f()
+
+	def store(self, x):
+		self.history.insert(0, x)
+
+	def __call__(self, statement):
+		relation = statement[0]
+		inputs = statement[1:len(statement)]
+		output = self.compute(relation, inputs)
+		data = Dict(['function', 'input', 'output'])
+		data['function'] = relation
+		data['input'] = [self.patterns[inputs[i]] for i in range(len(inputs))]
+		data['output'] = output
+		self.store(data)
+		return output
 
 def random_subset(X, s):
 	Y = []
@@ -69,3 +114,27 @@ def random_subset(X, s):
 		Y.append(V[j])
 		del V[i]
 	return Y
+
+def transpose(X):
+	if all_equal(to_all(X, get_name)) and get_name(X[0]) == 'dict':
+		output = Dict(X[0].keys())
+		for i in range(len(X)):
+			x = X[i]
+			for j in x.keys():
+				if output[j] == None:
+					output[j] = []
+				output[j].append(x[j])
+		return output
+
+sys = System()
+sys.add(Matrix([5]), 'A')
+sys.add(Matrix([5], 1), 'B')
+sys.add([5], 's')
+
+y = sys(['union', 'A', 'B'])
+y = sys(['intersection', 'A', 'B'])
+y = sys(['compliment', 'A', 'B'])
+
+d = sys.history
+print(transpose(d))
+print(y)

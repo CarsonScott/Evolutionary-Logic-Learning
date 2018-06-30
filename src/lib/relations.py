@@ -1,10 +1,10 @@
 from types import *
 
 def union(A, B):
-    Y = list(A)
-    for b in B:
-    	if b not in Y:
-    		Y.append(b)
+    Y = []
+    for x in A+B:
+        if x not in Y:
+            Y.append(x)
     return Y
 def intersection(A, B):
     Y = list()
@@ -15,10 +15,10 @@ def intersection(A, B):
     return Y
 def compliment(A, B):
     Y = list()
-    for i in range(len(A)):
-        a = A[i]
-        if a not in B:
-            Y.append(a)
+    for i in range(len(B)):
+        b = B[i]
+        if b not in A:
+            Y.append(b)
     return Y
 
 def equivalent(A, B):

@@ -1,17 +1,12 @@
 from lib.relations import *
 from lib.util import *
+from pattern import *
 import math
 
 def multiply(X, Y):
 	return [X[i] * Y[i] for i in range(len(X))]
 def subtract(X, Y):
 	return [X[i] - Y[i] for i in range(len(X))]
-
-def softmax(x):
-	return math.log(1 + math.exp(x))
-def logistic(x):
-  return 1 / (1 + math.exp(-x))
-
 
 class NeuralNetwork(list):
 
@@ -164,8 +159,18 @@ class NeuralNetwork(list):
 			Y = y
 		return Y
 
-nn=NeuralNetwork([10, 13, 10])
 
+# network = NeuralNetwork([3, 3, 3])
+
+
+# [0, 0, 0, 1]
+# [0, 0, 0, 2]
+
+# [0, 0, 0,-1]
+# [0, 0, 0, 1]
+
+nn=NeuralNetwork([10, 13, 10])
+# 
 X = [[1, 0, 1, 1, 0, 0, 1, 0, 0, 0],
 	 [0, 1, 1, 0, 0, 0, 0, 0, 1, 1],
 	 [0, 0, 1, 0, 0, 0, 0, 1, 1, 0],
@@ -178,9 +183,6 @@ X = [[1, 0, 1, 1, 0, 0, 1, 0, 0, 0],
 	 [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
 
 Y = []
-
-
-
 log = open('log.txt', 'w')
 c = -1
 
@@ -194,7 +196,6 @@ rewards = [[1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
 		   [-1, -1, -1, 1, -1, -1, -1, -1, -1, -1],
 		   [-1, -1, -1, -1, -1, -1, 1, -1, -1, -1],
 		   [-1, -1, -1, -1, -1, -1, -1, -1, 1, -1]]
-
 
 for i in range(10000):
 	for j in range(len(X)):
