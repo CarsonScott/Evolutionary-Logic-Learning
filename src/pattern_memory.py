@@ -68,6 +68,21 @@ class PatternMemory(Dict):
 			output = self.compute(value)
 		return output
 
+	def compress(self, pattern):
+		output = self.translate(pattern)
+		type = self.identify(pattern)
+		if type == 'pattern':
+			inputs = list()
+			function = pattern[0]
+			for i in range(1, len(pattern)):
+				value = self.translate(pattern[i])
+				if self.identify(value) == 'pattern':
+					value = self.compress(value)
+				else:
+					value = pattern[i]
+				inputs.append(value)
+			output = tuple([function] + inputs)
+		return output
 	def convert(self, data):
 		type = self.identify(data)
 		output = None
@@ -181,14 +196,14 @@ memory['set'] = set
 memory['store'] = memory.__setitem__
 
 # Variables
-memory['a'] = 5
+memory['a'] = ('*', 'b', 'c')
 memory['b'] = 3
 memory['c'] = 2
 memory['d'] = 66
 memory['e'] = -2
 
 # Structures
-memory['pattern'] = ('*', 'a', ('/', 'b', ('-', 'c', 'd')))
+memory['pattern'] = ('*', 'a', 'd')
 memory['model'] = memory.convert(memory.translate('pattern'))
 y = memory(('get', 'model', string('f')))
-print(memory('model'))
+print(memory.compress(memory.translate('pattern')))

@@ -86,13 +86,17 @@ class EquationMemory(PatternMemory):
 		del self.worlds[world][index]
 		del self.biases[key]
 		del self.weights[key]
-		self.insert('unassigned', key)
+		if world != 'unassigned':
+			self.insert('unassigned', key)
 
 	def generate(self, world):
 		inputs = []
 		options = self.get_world(world)
-		if len(options) == 0:
-			selection = rr(2)
+		if len(options) < self.limits[world][0]:
+			if world-1 in self.worlds.keys():
+				selection = self.generate(world-1)
+			else:
+				selection = rr(2)
 		else:
 			for j in range(rr(2, 5)):
 				k = rr(len(options))
@@ -139,25 +143,40 @@ class EquationMemory(PatternMemory):
 			db = 0.1 * outputs[i] * score * (1-tanh(abs(b)))
 			self.biases[k] = b + db
 			if self.thresholds[world] != None:
-				if self.biases[k] < self.thresholds[world]:
-					to_remove.append(k)
+				if self.identify(self.translate(k)) == 'pattern':
+					if self.biases[k] < self.thresholds[world]:
+						to_remove.append(k)
+					elif self.biases[k] > .01:#-self.thresholds[world]:
+						to_reduce.append(k)
+
+		if world+1 in self.worlds.keys():
+			for i in range(len(to_reduce)):
+				key = to_reduce[i]
+				pattern = self.compress(key)
+				self.remove(world, key)
+				self[random_str(5-world)] = pattern, world+1
 
 		if self.limits[world][0] != None:
 			if len(data)-len(to_remove) > self.limits[world][0]:
 				for i in to_remove:
 					self.remove(world, i)
+
 		if self.limits[world][1] == None or len(data) < self.limits[world][1]:
 				unassigned = self.worlds['unassigned']
 				if len(unassigned) > 0:
 					key = unassigned[rr(len(unassigned))]
 					self.remove('unassigned', key)
 				else:key = random_str(4)
-				self[key] = self.generate(0), world
+				self[key] = self.generate(world), world
 		return score
 
 memory = EquationMemory()
-memory.set_world(0)
-memory.set_world(1)
+
+for i in range(5):
+	t = 1/pow(6-i, 2)
+	l = 3
+	u = (6-i) * 3
+	memory.set_world(i, t, (l, u))
 
 ops = ['>','<','=']
 pro = ['>','<','=']
@@ -170,17 +189,16 @@ for i in range(5):
 
 log = open('log.txt', 'w')
 for i in range(1000):
-	score = memory.update(0)
-	world = memory.get_world(0)
-	s = str(i) + '	' + str(score) + '	'
-	for j in range(len(world)):
-		key = world[j]
-		bias = memory.biases[key]
-		s += str(bias) + '	'
+	s = str(i) + '	'
+	c = 0
+	for j in range(len(memory.worlds.keys())-1):
+		if j != 'unassigned':
+			score = memory.update(j) / memory.limits[j][1]
+			world = memory.get_world(j)
+			s += str(score) + '	'
+			c += 1
+	print(s)
 	log.write(s + '\n')
-	if i % 100 == 0:
-		memory.update(1)
-		print(len(world))
 log.close()
 
 
