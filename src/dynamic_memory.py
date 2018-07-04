@@ -20,17 +20,13 @@ def Div(X):
 
 class DynamicMemory(Dict):
 
-	def create(self, key, *data):
-		data = list(data)
-		if len(data) == 1 and isinstance(data[0], list):
-			data = data[0]
-		operator = None
-		inputs = None
-		if len(data) > 0:
-			operator = data[0]
-			if len(data) > 1:
-				inputs = data[1:]
-		self[key] = Operator(operator, inputs)
+	def create(self, *data):
+		values = list(data)
+		size = len(values)
+		if size > 0:key = values[0]
+		if size >= 1:function = values[1]
+		if size >= 2:inputs = values[2:]
+		self[key] = Operator(function, inputs)
 
 	def translate(self, data):
 		dtype = identify(data)
@@ -41,6 +37,7 @@ class DynamicMemory(Dict):
 		if dtype == 'operator':
 			function = self.translate(data[0])
 			inputs = self.translate(data[1:])
+			print(function, inputs)
 			output = function(inputs)
 		elif dtype == 'list':
 			output = list()
@@ -65,21 +62,17 @@ class Operator(list):
 					self.append(x)
 			else:self.append(inputs)
 
-dm = DynamicMemory()
-dm['multiply'] = Mult
-dm['*'] = 'multiply'
+# dm = DynamicMemory()
+# dm['multiply'] = Mult
+# dm['*'] = 'multiply'
 
-dm['divide'] = Div
-dm['/'] = 'divide'
+# dm['divide'] = Div
+# dm['/'] = 'divide'
 
-dm['a'] = 4
-dm['b'] = 3
-dm['c'] = 12
+# dm['a'] = 4
+# dm['b'] = 3
+# dm['c'] = 12
 
-dm['X'] = Operator('*', ['a', 'b', 'c'])
-dm['Y'] = Operator('/', ['a', 'b', 'c'])
-
-dm.create('Z', 'multiply', 'X', 'Y')
-
-print(dm.translate('Z'))
+# dm.create('X', '*', 'a', 'b', 'c')
+# print(dm.translate('X'))
 
