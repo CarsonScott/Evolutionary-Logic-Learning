@@ -1,18 +1,28 @@
 import math
+from lib.util import * 
 
 def bump(x):
 	if x == 0:return 1
 	return math.exp(-1/(1-pow(x,2))) / bump(0)
 
 class Histogram(list):
-	def __init__(self, size):
-		self.inc = 0.04
-		self.dec = 0.01
-		for i in range(size):
-			self.append(0)
+	def __init__(self, value_range):
+		self.inc = 0.01
+		self.log = Dict()
+		self.size = value_range
 
-	def add(self, sample):
-		index = round(sample)
-		if index in range(0, len(self)):
-			self[index] += self.inc * bump(-self[index]) 
-			self[index] -= self.dec * bump(self[index]) 
+	def retrieve(self, index):
+		if isinstance(index, float):
+			index = round(index*10)
+		if index not in self.log.keys():
+			if len(self.log.keys()) < self.size:
+				self.log[index] = 0
+		if index in self.log.keys():
+			return index
+
+	def update(self, index):
+		index = None
+		if isinstance(index, float):
+			index = round(index)
+		if index in self.log.keys():
+			self.log[index] += self.inc * logistic(-self.log[index])

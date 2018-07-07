@@ -1,18 +1,51 @@
 from pattern_memory import *
+from lib.util import *
 
-class Model(Dict):
-	def __init__(self, variables):
-		for k in variables:
-			self[k] = None
+class Model(PatternMemory):
+	def __init__(self, pattern):
+		super().__init__()
+		X = []
+		inputs = pattern[1:]
+		for i in range(len(inputs)):
+			x = inputs[i]
+			if x not in self.keys():
+				self[x] = None
+			X.append(x)
+		self['/output'] = None
+		self['/pattern'] = [pattern[0]] + X
+	def get_pattern(self):
+		return self.translate('/pattern')
+	def get_size(self):
+		return len(self.get_pattern())
+	def get_inputs(self):
+		return self.get_pattern()[1:]
+	def get_function(self):
+		return self.get_pattern()[0]
+	def get_output(self):
+		return super().compute(tuple(self.get_pattern()))
+	def set_output(self, value):
+		self['/output'] = value
 
-	def get_inputs(self, key):
-		if key not in self.open:
-			self.open.append(key)
+	def update(self, values):
+		inputs = self.get_inputs()
+		print(inputs, values)
+		c = 0
+		for i in inputs:
+			self[i] = values[c]
+			c += 1
 
-	def get_open(self):
-		re
-class ModelMemory(PatternMemory):
-	def __init__(self):
-		self.constraints = Dict()
+	def signature(self):
+		sig = Dict()
+		sig['type'] = self.translate(self.get_function())
+		sig['args'] = tuple(self.get_inputs())
+		return sig
 
-model = Model(['a', 'b', 'c'], ['a', 'c'])
+	def __call__(self, values):
+		self.update(values)
+		output = self.get_output()
+		self.set_output(output)
+		return output
+# pattern = ('+', 'a', 'b', 'c', 'd')
+# model = Model(pattern)
+
+# print(model.signature())

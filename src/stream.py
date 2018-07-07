@@ -1,16 +1,20 @@
 from lib.util import *
 
-class Stream:
+class Stream(list):
 	def __init__(self, stores):
-		self.stores = [[] for i in range(stores)]
+		self.size = stores
 
 	def retrieve(self, store):
-		return self.stores[store]
+		return self[store]
 
-	def update(self, data=None):
+	def add(self, data=None):
 		prev_store = data
-		for i in range(0, len(self.stores)):
-			this_store = self.stores[i]
-			self.stores[i] = prev_store
+		if len(self) < self.size:
+			self.insert(0, data)
+			preve_store = self[0]
+		for i in range(0, len(self)):
+			this_store = self[i]
+			self[i] = prev_store
 			prev_store = this_store
-		return self.stores
+		return self
+

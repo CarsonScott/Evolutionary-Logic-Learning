@@ -9,7 +9,6 @@ def multiply(X, Y):
 	return [X[i] * Y[i] for i in range(len(X))]
 
 class Motivator(System):
-
 	def __init__(self, patterns=[], delay=1):
 		super().__init__()
 		self.patterns = []

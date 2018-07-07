@@ -22,7 +22,7 @@ def compliment(A, B):
     return Y
 
 def equivalent(A, B):
-    return not len(compliment(A, B)) and not len(compliment(B, A))
+    return len(compliment(A, B)) == 0 and len(compliment(B, A)) == 0
 def containment(A, B):
     return not len(compliment(B, A))
 def disjoint(A, B):

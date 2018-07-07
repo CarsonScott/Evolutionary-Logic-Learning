@@ -1,22 +1,112 @@
 from tree import *
 from inspect import signature
-
-
+def Pow(X=[]):
+	return X[0] ** X[1]
+def In(X=[]):
+	return X[0] in X[1]
+def mul(X=[]):
+	y = 1
+	for x in X:
+		y *= x
+	return y
+def add(X=[]):
+	y = 0
+	for x in X:
+		y += x
+	return y
+def sub(X=[]):
+	y = X[0]
+	del X[0]
+	for x in X:
+		y -= x
+	return y
+def div(X=[]):
+	y = X[0]
+	del X[0]
+	for x in X:
+		y /= x
+	return y
+def And(X=[]):
+	for x in X:
+		if x != True:
+			return False
+	return True
+def Or(X=[]):
+	for x in X:
+		if x == True:
+			return True
+	return False
+def Not(X=[]):
+	for x in X:
+		if x == True:
+			return False
+	return True
+	
+def eq(X=[]):
+	for i in range(1, len(X=[])):
+		if X[i-1] != X[i]:return False
+	return True
+def neq(x):
+	for i in range(1, len(X=[])):
+		if X[i-1] == X[i]:return False
+	return True
+def gt(X=[]):
+	for i in range(1, len(X=[])):
+		if X[i-1] <= X[i]:
+			return False
+	return True
+def lt(X=[]):
+	for i in range(1, len(X=[])):
+		if X[i-1] >= X[i]:
+			return False
+	return True
+def gteq(X=[]):
+	for i in range(1, len(X=[])):
+		if X[i-1] < X[i]:
+			return False
+	return True
+def lteq(X=[]):
+	for i in range(1, len(X=[])):
+		if X[i-1] > X[i]:
+			return False
+	return True
+def get(X=[]):
+	x = X[0]
+	k = X[1]
+	return x[k]
+def set(X=[]):
+	x = X[0]
+	k = X[1]
+	v = X[2]
+	x[k] = v
+	return x
 class string(str):
 	pass
 
 class PatternMemory(Dict):
 	def __init__(self):
-		self.types = Dict()
+		super().__init__()
+		self.initialize()
 	def __setitem__(self, key, value):
 		type = self.identify(value)
-		self.set_type(key, type)
 		super().__setitem__(key, value)
-
-	def get_type(self, key):
-		return self.types[key]
-	def set_type(self, key, type):
-		self.types[key] = type
+	def initialize(self):
+		self['+'] = add
+		self['-'] = sub
+		self['*'] = mul
+		self['/'] = div
+		self['^'] = pow
+		self['>'] = gt
+		self['<'] = lt
+		self['='] = eq
+		self['!='] = neq
+		self['>='] = gteq
+		self['<='] = lteq
+		self['&'] = And
+		self['in'] = In
+		self['!'] = Not
+		self['|'] = Or
+		self['id'] = identify
 
 	def identify(self, value):
 		type = 'data'
@@ -30,22 +120,25 @@ class PatternMemory(Dict):
 			type = 'list'
 		elif isinstance(value, str):
 			type = 'key'
+		elif isinstance(value, bool):
+			type = 'bool'
 		elif callable(value):
 			type = 'op'
 		return type
 
-	def translate(self, value, scope=None):
-		if scope == None:scope = self
+	def translate(self, value):
 		type = self.identify(value)
 		output = value
+
 		if type == 'key':
-			output = self.translate(scope[value])
+			output = self[value]
 		elif type == 'list':
 			output = []
 			for i in range(len(value)):
 				data = self.translate(value[i])
 				output.append(data)
-		return output
+		if output != None:
+			return output
 
 	def compute(self, pattern):
 		output = pattern
@@ -56,9 +149,14 @@ class PatternMemory(Dict):
 			for i in range(1, len(pattern)):
 				value = self.translate(pattern[i])
 				inputs.append(self.compute(value))
-			params = len(signature(function).parameters)
-			if params > 1: output = function(*inputs)
-			else: output = function(inputs)
+			
+			try:
+				params = len(signature(function).parameters)
+				if params == len(inputs):
+
+					output = function(*inputs)
+			except:
+				output = []
 		elif type == 'list':
 			output = []
 			for i in range(len(pattern)):
@@ -99,7 +197,6 @@ class PatternMemory(Dict):
 			output = model
 		elif type == 'model':
 			pattern = [data['f']]
-			print(data.keys())
 			for i in range(1, len(data)):
 				key = 'x' + str(i-1)
 				value = data[key]
@@ -113,97 +210,29 @@ class PatternMemory(Dict):
 	def __call__(self, data):
 		return self.compute(self.translate(data))
 
-def mul(X):
-	y = 1
-	for x in X:
-		y *= x
-	return y
-def add(X):
-	y = 0
-	for x in X:
-		y += x
-	return y
-def sub(X):
-	y = X[0]
-	del X[0]
-	for x in X:
-		y -= x
-	return y
-def div(X):
-	y = X[0]
-	del X[0]
-	for x in X:
-		y /= x
-	return y
 
-def eq(X):
-	for i in range(1, len(X)):
-		if X[i-1] != X[i]:return False
-	return True
-def neq(x):
-	for i in range(1, len(X)):
-		if X[i-1] == X[i]:return False
-	return True
-def gt(X):
-	for i in range(1, len(X)):
-		if X[i-1] <= X[i]:
-			return False
-	return True
-def lt(X):
-	for i in range(1, len(X)):
-		if X[i-1] >= X[i]:
-			return False
-	return True
-def gteq(X):
-	for i in range(1, len(X)):
-		if X[i-1] < X[i]:
-			return False
-	return True
-def lteq(X):
-	for i in range(1, len(X)):
-		if X[i-1] > X[i]:
-			return False
-	return True
-def get(X):
-	x = X[0]
-	k = X[1]
-	return x[k]
-def set(X):
-	x = X[0]
-	k = X[1]
-	v = X[2]
-	x[k] = v
-	return x
 
-# Memory
-memory = PatternMemory()
+# # Memory
+# memory = PatternMemory()
 
-# Operators
-memory['+'] = add
-memory['-'] = sub
-memory['*'] = mul
-memory['/'] = div
-memory['^'] = pow
-memory['>'] = gt
-memory['<'] = lt
-memory['='] = eq
-memory['!='] = neq
-memory['>='] = gteq
-memory['<='] = lteq
 
-memory['get'] = get
-memory['set'] = set
-memory['store'] = memory.__setitem__
+# memory['get'] = get
+# memory['set'] = set
+# memory['store'] = memory.__setitem__
 
-# Variables
-memory['a'] = ('*', 'b', 'c')
-memory['b'] = 3
-memory['c'] = 2
-memory['d'] = 66
-memory['e'] = -2
+# # Variables
+# memory['a'] = ('*', 'b', 'c')
+# memory['b'] = 3
+# memory['c'] = 2
+# memory['d'] = 66
+# memory['e'] = -2
 
-# Structures
-memory['pattern'] = ('*', 'a', 'd')
-memory['model'] = memory.convert(memory.translate('pattern'))
-y = memory(('get', 'model', string('f')))
-print(memory.compress(memory.translate('pattern')))
+
+# y = memory.convert('a')
+# print(y)
+# # Structures
+# memory['pattern'] = ('*', 'a', 'd')
+# memory['model'] = memory.convert(memory.translate('pattern'))
+# y = memory(('get', 'model', string('f')))
+# print(y)
+# # print(memory.compress(memory.translate('pattern')))
