@@ -83,12 +83,14 @@ class Tree(NestedList):
 				new_tree[1].append(data)
 		self.reset(new_tree)
 
-# t = Tree(2)
-# t[0] = 'a'
-# t[1] = 'c'
-# t[2] = Tree(['b', 'd', 'e'])
+if __name__ == "__main__":
 
-# t.display()
-# t.rotate(2)
-# t.display()
+	t = Tree(2)
+	t[0] = 'a'
+	t[1] = 'c'
+	t[2] = Tree(['b', 'd', 'e'])
+
+	t.display()
+	t.rotate(2)
+	t.display()
 

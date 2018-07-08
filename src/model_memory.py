@@ -5,14 +5,15 @@ class Model(PatternMemory):
 	def __init__(self, pattern):
 		super().__init__()
 		X = []
-		inputs = pattern[1:]
+		function = pattern[0]
+		inputs = list(pattern[1:])
 		for i in range(len(inputs)):
 			x = inputs[i]
 			if x not in self.keys():
 				self[x] = None
 			X.append(x)
 		self['/output'] = None
-		self['/pattern'] = [pattern[0]] + X
+		self['/pattern'] = [function] + inputs
 	def get_pattern(self):
 		return self.translate('/pattern')
 	def get_size(self):
@@ -45,7 +46,3 @@ class Model(PatternMemory):
 		output = self.get_output()
 		self.set_output(output)
 		return output
-# pattern = ('+', 'a', 'b', 'c', 'd')
-# model = Model(pattern)
-
-# print(model.signature())

@@ -3,6 +3,30 @@ from lib.relations import *
 from lib.constraints import *
 from lib.util import *
 
+class GroupedSet(list):
+	def __init__(self, groups, default=None):
+		self.groups = groups
+		self.default =default
+		size = len(union(groups, groups))
+		for size in range(size):
+			self.append([])
+	def __call__(self, inputs):
+		visited = []
+		for i in range(len(inputs)):
+			if i < len(self.groups):
+				g = self.groups[i]
+	
+			elif self.default != None:
+				g = self.default
+
+			if g != None:		
+				if g not in visited:
+					self[g] = []
+					visited.append(g)
+				x = inputs[i]
+				self[g].append(x)
+		return self
+
 def to_string(X):
 	string = ''
 	for x in X:
@@ -16,7 +40,7 @@ def product(X):
 	return y
 
 def is_template(object):
-	return isinstance(object, Dict) and equivalent(object.keys(), ['type', 'data'])
+	return isinstance(object, Dict) and containment(['type', 'data'], object.keys())
 
 def template(type=None, data=None):
 	return Dict({'type':type, 'data':data})
@@ -59,6 +83,7 @@ def create(type, data):
 def convert(template):
 	type = template['type']
 	data = template['data']
+
 	for i in range(len(data)):
 		if is_template(data[i]):
 			data[i] = convert(data[i])
@@ -290,31 +315,6 @@ def variables(expression):
 	tree.parse(expression)
 	print(tree)
 
-class ProbabilitySpace(Dict):
-	def __init__(self, keys):
-		self.examples = 0
-		for i in range(len(keys)):
-			k = keys[i]
-			self[k] = 0
-
-	def train(self, keys):
-		for i in range(len(keys)):
-			k = keys[i]
-			self[k] += 1
-		self.examples += 1
-
-	def compute(self):
-		size = self.examples
-		distribution = dict(self)
-		for i in distribution.keys():
-			distribution[i] /= size
-		return distribution
-
-	def reset(self):
-		self.examples = 0
-		for i in self.keys():
-			self[i] = 0
-
 class RelationalMatrix(Dict):
 	def __init__(self, keys):
 		self.examples = 0
@@ -324,7 +324,6 @@ class RelationalMatrix(Dict):
 			for j in range(i, len(keys)):
 				kj = keys[j]
 				self[ki][kj] = 0
-		
 	def train(self, keys):
 		for i in range(len(keys)):
 			ki = keys[i]
@@ -392,11 +391,12 @@ class Group(Dict):
 
 # group.compute()
 # print(group.get('a', 'b'))
+if __name__ == "__main__":
 
-memory = {'a':0, 'b':1, 'c':1,'d':1}
-expression = '((a | b) < (c ^ d));'
-function = generate(expression)
-output = function(memory)
+	memory = {'a':0, 'b':1, 'c':1,'d':1}
+	expression = '((a | b) < (c ^ d));'
+	function = generate(expression)
+	output = function(memory)
 # print(output)
 
 

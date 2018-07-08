@@ -1,5 +1,7 @@
 from tree import *
 from inspect import signature
+from template import *
+
 def Pow(X=[]):
 	return X[0] ** X[1]
 def In(X=[]):
@@ -110,10 +112,10 @@ class PatternMemory(Dict):
 
 	def identify(self, value):
 		type = 'data'
+		if is_template(value):
+			type = 'template'
 		if isinstance(value, tuple):
 			type = 'pattern'
-		if isinstance(value, dict):
-			type = 'model'
 		if isinstance(value, string):
 			type = 'string'
 		elif isinstance(value, list):
@@ -143,20 +145,25 @@ class PatternMemory(Dict):
 	def compute(self, pattern):
 		output = pattern
 		type = self.identify(pattern)
+		if type == 'template':
+			inputs = self.translate(pattern['data'])
+			function = self.translate(pattern['type'])
+			output = function()
+
+			inputs = list()
+			function = self.translate(pattern['type'])
+			for i in range(1, len(pattern)):
+				value = self.translate(pattern['data'][i])
+				inputs.append(self.compute(value))
+			output = function(inputs)
+
 		if type == 'pattern':
 			inputs = list()
 			function = self.translate(pattern[0])
 			for i in range(1, len(pattern)):
 				value = self.translate(pattern[i])
 				inputs.append(self.compute(value))
-			
-			try:
-				params = len(signature(function).parameters)
-				if params == len(inputs):
-
-					output = function(*inputs)
-			except:
-				output = []
+			output = function(inputs)
 		elif type == 'list':
 			output = []
 			for i in range(len(pattern)):
@@ -195,44 +202,34 @@ class PatternMemory(Dict):
 					value = self.convert(value)
 				model[key] = value	
 			output = model
-		elif type == 'model':
-			pattern = [data['f']]
-			for i in range(1, len(data)):
-				key = 'x' + str(i-1)
-				value = data[key]
-				type = self.identify(value)
-				if type == 'model':
-					value = self.convert(value)
-				pattern.append(value)
-			output = tuple(pattern)
-		return output
 
 	def __call__(self, data):
 		return self.compute(self.translate(data))
 
 
+if __name__ == "__main__":
 
-# # Memory
-# memory = PatternMemory()
-
-
-# memory['get'] = get
-# memory['set'] = set
-# memory['store'] = memory.__setitem__
-
-# # Variables
-# memory['a'] = ('*', 'b', 'c')
-# memory['b'] = 3
-# memory['c'] = 2
-# memory['d'] = 66
-# memory['e'] = -2
+	# Memory
+	memory = PatternMemory()
 
 
-# y = memory.convert('a')
-# print(y)
-# # Structures
-# memory['pattern'] = ('*', 'a', 'd')
-# memory['model'] = memory.convert(memory.translate('pattern'))
-# y = memory(('get', 'model', string('f')))
-# print(y)
-# # print(memory.compress(memory.translate('pattern')))
+	memory['get'] = get
+	memory['set'] = set
+	memory['store'] = memory.__setitem__
+
+	# Variables
+	memory['a'] = ('*', 'b', 'c')
+	memory['b'] = 3
+	memory['c'] = 2
+	memory['d'] = 66
+	memory['e'] = -2
+
+
+	y = memory.convert('a')
+	print(y)
+	# Structures
+	memory['pattern'] = ('*', 'a', 'd')
+	memory['model'] = memory.convert(memory.translate('pattern'))
+	y = memory(('get', 'model', string('f')))
+	print(y)
+	# print(memory.compress(memory.translate('pattern')))

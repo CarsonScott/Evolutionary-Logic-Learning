@@ -6,6 +6,18 @@ from random import randrange as rr
 import utilities
 import math 
 
+def getitem(X, i):
+	return X[i]
+
+def is_matrix(X):
+	return isinstance(X, Matrix)
+
+def iterable(X):
+	try:
+		len(X)
+		return True
+	except:
+		return False
 
 def random_str(size):
 	x = list('abcdefghijklmnopqrstuvwxyz')

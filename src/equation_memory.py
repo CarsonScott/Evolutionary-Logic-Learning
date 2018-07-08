@@ -252,9 +252,9 @@ class EquationMemory(PatternMemory):
 			if rr(10) == 0:
 				del X[rr(len(X))]
 
-		if f == None:
-			f = functions[rr(len(functions))]
-		y = tuple([f] + X)
+			if f == None:
+				f = functions[rr(len(functions))]
+			y = tuple([f] + X)
 
 		print(y)
 		return y
@@ -318,7 +318,6 @@ options =  [True,False] + [i for i in range(-10, 10)] + [math.e, math.pi]
 for i in range(19):
 	ss = options + memory.outputs.keys()
 	key = random_str(4)
-	print(key)
 	memory.set_object(key, ss[rr(len(ss))], True)
 
 samples = []
