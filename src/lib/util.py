@@ -6,6 +6,22 @@ from random import randrange as rr
 import utilities
 import math 
 
+def mul(*X):
+	y = 1
+	if len(X) == 1:
+		X = X[0]
+
+	if iterable(X):
+		y = X[0]
+		x = X[1:]
+		if len(x) == 1:
+			return y * x
+		elif len(x) > 1:
+			return y * mul(x)
+		else:
+			return y
+
+
 def getitem(X, i):
 	return X[i]
 
@@ -48,7 +64,6 @@ def sort(d):
 		keys = list(d.keys())
 	elif isinstance(d, list):
 		keys = [i for i in range(len(d))]
-
 	K = []
 	X = []
 	for k in keys:
@@ -57,10 +72,8 @@ def sort(d):
 			X.append(d[k])
 	keys = K
 	vals = X
-
 	if len(keys) <= 1:
 		return keys
-
 	done = False
 	while not done:
 		done = True
@@ -78,32 +91,8 @@ def sort(d):
 				keys[i+1] = k1
 				vals[i+1] = v1
 	return keys
-
-
 def reverse(X):
 	Y = []
 	for i in range(len(X)-1, -1, -1):
 		Y.append(X[i])
 	return Y
-
-# Database for translating keys into functions and vice-versa 
-FUNCTIONS = Dict({'appear':APP, 'disappear':DIS, 'increase':INC, 'decrease':DEC, 'change':DIF})
-TYPES = Dict({'bool':['appear', 'disappear'], 'int':['increase', 'decrease'], 'float':['increase', 'decrease'], 'other':['change']})
-CONSTRUCTORS = Dict({'bool':BOOL, 'int':INT, 'float':FLOAT, 'string':STRING, 'list':LIST, 'dict':DICT})
-
-# Instantiate a given type to form an object
-def create(T):
-	if T in CONSTRUCTORS.keys():
-		return CONSTRUCTORS[T]()
-
-	# Y = Type()
-	# for i in range(len(T)):
-	# 	t = T[i]
-	# 	y = None
-	# 	if isinstance(t, Type):
-	# 		y = create(t)
-	# 	elif t in CONSTRUCTORS.keys():
-	# 		c = CONSTRUCTORS[t] 
-	# 		y = c()
-	# 	Y.append(y)
-	# return Y
