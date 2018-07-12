@@ -1,4 +1,4 @@
-# Inference Rules
+# Inference Rules and Sequences
 
 Inference rules are at the core of what it means to understand a language, as they give rise to additional knowledge that is not contained by any one element of a language but rather is derived through the interaction between those elements when they are composed in a sequence.
 
@@ -14,6 +14,6 @@ IRL allows for complex functions to be analyzed and simulated by relatively simp
 
 Rules of inference effectively generate predictions as a result of their very existence, providing a temporal platform on which to build more complex, meaningful structures.
 
-# Rules of Action
+# Game Rules and Actions
 
-The generality of inference rules allows them to be applied in essentially any temporal domain, which is especially useful for understanding action. The optimal strategy one can take at any given time is dependent on a reliable understanding of effects each  potential action can cause when taken in some initial state. Agents who tend to make more accurate judgements about the world and themselves will obviously survive better in a competitive social space because they effectively make use of knowledge more efficiently than those whose with a tendency toward unreliable or ineffective data-handling processes.
+The generality of inference rules allows them to be applied in essentially any temporal domain, which is especially useful for understanding action. The optimal strategy one can take at any given time is dependent on a reliable understanding of effects each  potential action can cause when taken in some initial state. Agents who tend to make more accurate judgements about the world and themselves will obviously survive better in a competitive social space because they effectively make use of knowledge more efficiently than those with a tendency to yield unreliable or ineffective methods of data processing.
