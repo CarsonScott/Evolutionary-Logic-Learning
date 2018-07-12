@@ -10,4 +10,6 @@ __Inference-Rule Example:__
     
     (INFER, (a, b, c), d)
     
-IRL allows for complex functions to be analyzed simulated in terms of relatively simple processes, i.e. following a set of rules. Due to their inherently temporal nature, inference rules create logical systems that automatically enable things like planning to take place, and thus allow for the consideration of possible worlds outside of that which is immediately perceived by an observer. Rules of inference effectively generate predictions through the very act perceiving them, and thus provide a temporal basis on which to build more complex meaningful structure.
+IRL allows for complex functions to be analyzed and simulated by relatively simple processes, i.e. following a set of pre-determined rules. Due to their inherent temporal nature, inference rules create logical systems that automatically enable things like planning to take place, thus for the consideration of possible worlds outside of what one is immediately perceiving. 
+
+Rules of inference effectively generate predictions as a result of their very existence, providing a temporal platform on which to build more complex, meaningful structures.
