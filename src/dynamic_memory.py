@@ -62,17 +62,17 @@ class Operator(list):
 					self.append(x)
 			else:self.append(inputs)
 
-# dm = DynamicMemory()
-# dm['multiply'] = Mult
-# dm['*'] = 'multiply'
+dm = DynamicMemory()
+dm['multiply'] = Mult
+dm['*'] = 'multiply'
 
-# dm['divide'] = Div
-# dm['/'] = 'divide'
+dm['divide'] = Div
+dm['/'] = 'divide'
 
-# dm['a'] = 4
-# dm['b'] = 3
-# dm['c'] = 12
+dm['a'] = 4
+dm['b'] = 3
+dm['c'] = 12
 
-# dm.create('X', '*', 'a', 'b', 'c')
-# print(dm.translate('X'))
+dm.create('X', '*', 'a', 'b', 'c')
+print(dm.translate('X'))
 

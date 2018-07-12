@@ -1,6 +1,5 @@
-from tree import *
-from inspect import signature
-from template import *
+from lib.util import *
+from matrix import *
 
 def Pow(X=[]):
 	return X[0] ** X[1]
@@ -45,30 +44,30 @@ def Not(X=[]):
 	return True
 	
 def eq(X=[]):
-	for i in range(1, len(X=[])):
+	for i in range(1, len(X)):
 		if X[i-1] != X[i]:return False
 	return True
 def neq(x):
-	for i in range(1, len(X=[])):
+	for i in range(1, len(X)):
 		if X[i-1] == X[i]:return False
 	return True
 def gt(X=[]):
-	for i in range(1, len(X=[])):
+	for i in range(1, len(X)):
 		if X[i-1] <= X[i]:
 			return False
 	return True
 def lt(X=[]):
-	for i in range(1, len(X=[])):
+	for i in range(1, len(X)):
 		if X[i-1] >= X[i]:
 			return False
 	return True
 def gteq(X=[]):
-	for i in range(1, len(X=[])):
+	for i in range(1, len(X)):
 		if X[i-1] < X[i]:
 			return False
 	return True
 def lteq(X=[]):
-	for i in range(1, len(X=[])):
+	for i in range(1, len(X)):
 		if X[i-1] > X[i]:
 			return False
 	return True
@@ -82,6 +81,7 @@ def set(X=[]):
 	v = X[2]
 	x[k] = v
 	return x
+
 class string(str):
 	pass
 
@@ -109,11 +109,12 @@ class PatternMemory(Dict):
 		self['!'] = Not
 		self['|'] = Or
 		self['id'] = identify
+		self['mat'] = Matrix
+		self['true'] = True
+		self['false'] = False
 
 	def identify(self, value):
 		type = 'data'
-		if is_template(value):
-			type = 'template'
 		if isinstance(value, tuple):
 			type = 'pattern'
 		if isinstance(value, string):
@@ -131,7 +132,6 @@ class PatternMemory(Dict):
 	def translate(self, value):
 		type = self.identify(value)
 		output = value
-
 		if type == 'key':
 			output = self[value]
 		elif type == 'list':
@@ -159,11 +159,45 @@ class PatternMemory(Dict):
 
 		if type == 'pattern':
 			inputs = list()
+			types = list()
+			matrices = list()
+			indices = list()
 			function = self.translate(pattern[0])
 			for i in range(1, len(pattern)):
 				value = self.translate(pattern[i])
-				inputs.append(self.compute(value))
-			output = function(inputs)
+				input = self.compute(value)
+				type = self.identify(input)
+				inputs.append(input)
+				types.append(type)
+				if type == 'matrix':
+					matrices.append(input)
+					indices.append(i-1)
+
+			Y = None
+			if len(matrices) > 1:
+				matrices = associate(*matrices)
+				data = [list(inputs) for i in range(len(matrices))]
+				for i in range(len(matrices)):
+					for j in range(len(matrices[i])):
+						x = matrices[i][j]
+						k = indices[j]
+						data[i][k] = x
+				Y = Matrix()
+				for i in range(len(data)):
+					Y.append(function(data[i]))
+			elif len(matrices) > 0:
+				Y = Matrix()
+				matrix = matrices[0]
+				index = indices[0]
+				data = [list(inputs) for i in range(len(matrix))]
+				for i in range(len(matrix)):
+					data[i][index] = matrix[i]
+				for i in range(len(data)):
+					Y.append(function(data[i]))
+					
+			else: Y = function(inputs)
+			return Y
+
 		elif type == 'list':
 			output = []
 			for i in range(len(pattern)):
@@ -188,6 +222,7 @@ class PatternMemory(Dict):
 				inputs.append(value)
 			output = tuple([function] + inputs)
 		return output
+
 	def convert(self, data):
 		type = self.identify(data)
 		output = None

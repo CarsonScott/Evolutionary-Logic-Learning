@@ -11,13 +11,21 @@ class Function(Matrix):
 	def get(self, input):
 		if input in self.indices.keys():
 			return self.indices[input]
-		return input
 	def set(self, input, output):
-		index = len(self)
-		self.append(create(input, output))
 		if input not in self.indices.keys():
-			self.indices[input] = create()	
-		self.indices[input].append(index)
+			index = len(self)
+			self.indices[input] = [index]	
+			self.append(Matrix([input, output]))
+		else:
+			indices = self.indices[input]
+			recorded = False
+			for i in indices:
+				if self.output(i) == output:
+					recorded = True
+			if not recorded:
+				self.indices[input].append(len(self))
+				self.append(Matrix([input, output]))
+
 	def index(self, input):
 		index = self.get(input)
 		return index
@@ -25,12 +33,12 @@ class Function(Matrix):
 		output = self[index, 1]
 		return output
 	def __call__(self, input):
-		indices = self.index(input)
-		outputs = Matrix()
-		if iterable(indices):
-			for i in indices:
-				output = self.output(i)
-				outputs.append(output)
-		if len(outputs) == 1:
-			outputs = outputs[0]
-		return outputs
+
+		i = self.index(input)
+		if i == None:return None
+		Y = []
+		if len(i) > 1:
+			for j in i:Y.append(self.output(j))
+		elif len(i) == 1:Y = self.output(i[0])
+		return Y
+		

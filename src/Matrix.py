@@ -95,23 +95,23 @@ class Matrix(list):
 				y = x
 			Y.append(y)
 		return Y
-def compose(S, value=0):
+def compose(shape, value=0):
 	Y = Matrix()
-	for i in range(len(S)):
-		s = S[i]
+	for i in range(len(shape)):
+		s = shape[i]
 		if iterable(s):
 			y = compose(s, value)
 		elif s != 0:y = [value for j in range(s)]
 		else:y = value
 		Y.append(y)
 	return Y
-def shape(X):
-	size = len(X)
+def shape(matrix):
+	size = len(matrix)
 	leaf = True
 	output = [0 for i in range(size)]
 	for i in range(size):
-		if iterable(X[i]):
-			output[i] = shape(Matrix(X[i]))
+		if iterable(matrix[i]):
+			output[i] = shape(Matrix(matrix[i]))
 			leaf = False
 	if leaf:return size
 	return Matrix(output)

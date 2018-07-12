@@ -94,6 +94,23 @@ class WordClassifier(Function):
 			self.set(w, 'ignore')
 		self.set(None, 'ignore')
 
+I = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+X = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+
+
+iterator = Function()
+
+for j in range(len(X)):
+	i = I[j]
+	x = X[j]
+	iterator.set(x, i)
+
+for x in X:
+	print(x, iterator(x))
+
+
+
 # f1 = WordClassifier('abcdefghijklmnopqrstuvwxyz0123456789', '|-.', ' ')
 
 # print(f1('a'), f1('.'), f1(' '))

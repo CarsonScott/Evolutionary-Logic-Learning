@@ -1,206 +1,113 @@
-from tree import *
+from lib.util import *
+from matrix import *
 
-def nonempty(x):
-	return x != None
-def istrue(x):
-	return x == True
+class Pattern(Dict):
+	def __init__(self, size, keys):
+		self.biases = Dict()
+		self.weights = Dict()
+		self.predictions = list()
+		self.active = list()
+		self.size = size
+		self.fitness = 0
+		self.performance = 0
+		self.threshold = 0
+		self.lrate = 0.01
+		for key in keys:
+			self.biases[key] = rr(1, 10)/1000
+			self.weights[key] = Dict()
+			for k in keys:
+				self.weights[key][k] = rr(1, 10)/1000
 
-class Pattern(Tree):
-	def __init__(self, data):
-		super().__init__(data)
-		self.fitness = None
-		self.operator = None
-		self.contraints = []
-		self.requirements = [True]
-		self.phrase_types = [type]
-		for i in range(1, len(self)):
-			self.phrase_types.append(None)
-			self.requirements.append(False)
+	def compute_output(self, key):
+		x = key in self.active
+		b = self.biases[key]
+		y = x * b
+		return y
 
-	def get_required(self):
-		required = []
-		for i in range(len(self.requirements)):
-			if self.requirements[i]:
-				required.append(i)
-		return required
-	def get_score(self):
-		score = sum(map(nonempty, self))
-		total = sum(self.requirements)
-		if total != 0: score /= total
-		return score
+	def compute_performance(self, key):
+		if key in self.predictions:
+			index = self.predictions.index(key)
+		else:index = -1
+		performance = self.biases[key] * logistic(index)
+		return performance
+
+	def compute_fitness(self):
+		fitness = self.fitness + self.lrate * self.performance * softmax(-abs(self.fitness))
+		return fitness
+
+	def input(self, key):
+		if key in self.active:
+			del self.active[self.active.index(key)]
+		self.active.append(key)
+		if len(self.active) > self.size:
+			del self.active[0:len(self.active)-self.size]
+		self.performance = self.compute_performance(key)
+		self.fitness = self.compute_fitness()
+	
+	def compute(self):
+		Y = Dict()
+		outputs = Dict()
+		for key in self.biases.keys():
+			W = self.weights[key]
+			y = self.compute_output(key)
+			for i in self.weights[key].keys():
+				if i != key:
+					if i not in Y.keys():
+						Y[i] = W[i] * y
+					else:Y[i] += W[i] * y
+		for key in Y.keys():
+			y = tanh(Y[key]/len(Y.keys()))
+			self.biases[key] += self.lrate * y * tanh(1-abs(self.biases[key]))
+		self.predictions = sort(Y)[len(Y)-self.size:len(Y)]
+		return Y
 
 	def update(self):
-		self.fitness = self.get_score()
-		return self.fitness
-	def translate(self, data):
-		output = []
-		for i in range(len(self)):
-			value = self[i]
-			if isinstance(data, dict):
-				if isinstance(value, str):
-					if value in list(data.keys()):
-						value = data[value]
-			if isinstance(data, list): 
-				if isinstance(value, int):
-					if value < len(data):
-						value = data[value]
-			output.append(value)
-		return output[0], output[1:]
-	def compute(self, data):
-		function, inputs = self.translate(data)
-		for i in range(len(inputs)):
-			if isinstance(inputs[i], Tree):
-				inputs[i] = inputs[i].compute(data)
-		return function(inputs)
+		for i in range(len(self.active)):
+			key = self.active[i]
+			for j in range(i, len(self.active)):
+				if i != j:
+					k = self.active[j]
+					y = tanh(1-(j - i)/(self.size))
+					self.weights[key][k] += self.lrate * y * tanh(1-abs(self.weights[key][k]))
 
-memory = Dict({'sum':sum, 'a':1, 'b':2, 'c':4, 'd':3, 'e':1})
-tree = Pattern(['sum', 'a', Pattern(['sum', 'b', 'c'])])
+	def __call__(self, x):
+		if x in self.biases.keys():
+			P = Matrix(self.predictions)
+			M = Matrix(self.active)
+			self.input(x)
+			F = self.performance
+			self.compute()
+			self.update()
+			return self.record(F, M, P)
 
-output = tree.compute(memory)
-tree.display()
+	def record(self, performance, active, predicted):
+		record = Dict()
+		record['performance'] = performance
+		record['predicted'] = predicted
+		record['active'] = active
+		return record
 
-print(output)
+class NumericalPattern(Pattern):
+	def __init__(self, size, r, b):
+		keys = []
+		if identify(r) == 'int':
+			for i in range(int(int(r/b))):
+				keys.append(str(int(i*b)))
+		elif iterable(r):
+			for i in range(r[0], r[1]):
+				keys.append(str(int(i*b)))
+		keys.append(str(int(keys[len(keys)-1]) + b))
+		print(keys)
+		super().__init__(size, keys)
 
-
-
-
-# from template import addition, create, generate, express, ExpressionTree
-# from Generator import *
-# from Matrix import *
-# from goodata import Dict
-# from random import randrange as rr
-# from lib.relations import *
-# from math import tanh
-
-# class Proposition:
-# 	def __init__(self, data):
-# 		self.data = data
-# 		self.create()
-# 	def create(self):
-# 		data = self.data
-# 		self.expression = None
-# 		self.function = None
-# 		if isinstance(data, str):
-# 			self.expression = data
-# 			self.function = generate(data)
-# 		elif isinstance(data, Proposition):
-# 			self.expression = express(data)
-# 			self.function = data
-# 		self.template = ExpressionTree(self.expression)
-# 	def __call__(self, input):
-# 		self.create()
-# 		return self.function(input)
-
-# class Pattern(list):
-# 	def __init__(self, propositions=[]):
-# 		for p in propositions:
-# 			self.append(p)
-# 	def __call__(self, X):
-# 		Y = []
-# 		for f in self:
-# 			Y.append(f(X))
-# 		return Y
-# 	def size(self):
-# 		return len(self)
-
-# class System:
-# 	def __init__(self):
-# 		self.patterns = Dict()
-# 		self.database = Dict()
-# 		self.history = list()
-# 		self.counter = 0
-# 		symbols = ['matrix', 'size', 'union', 'intersection', 'compliment', 'equivalent', 'containment', 'disjoint']
-# 		functions = [Matrix, len, union, intersection, compliment, equivalent, containment, disjoint]
-# 		inputs = ['list', 'list', 'list', 'list', 'list', 'list', 'list', 'list']
-# 		outputs = ['list', 'int', 'list', 'list', 'list', 'bool', 'bool', 'bool']
-# 		for i in range(len(functions)):
-# 			self.patterns[symbols[i]] = functions[i]
-# 			self.database[symbols[i]] = Dict()
-# 			self.database[symbols[i]]['types'] = [inputs[i], outputs[i]]
-# 		self.relations = symbols
-
-# 	def type(self, i):
-# 		return get_name(self.patterns[i])
-
-# 	def size(self):
-# 		return len(self.patterns)
-
-# 	def add(self, pattern, key=None):
-# 		if key == None:
-# 			index = self.counter
-# 			self.counter += 1
-# 		else:
-# 			index = key
-# 		self.patterns[index] = pattern
-# 		self.database[index] = Dict()
-
-# 	def compute(self, relation, inputs):
-# 		i,j = None,None
-# 		if len(inputs) >= 1:
-# 			i = inputs[0]
-# 		if len(inputs) >= 2:
-# 			j = inputs[1]
-
-# 		f = self.patterns[relation]
-# 		xi,xj = None,None
-# 		if i != None:xi = self.patterns[i]
-# 		if j != None:xj = self.patterns[j]
-
-# 		xtypes = self.database[relation]['types'][0]
-# 		if xi != None:
-# 			if (xtypes != None and get_name(xi) == xtypes) or xtypes == None:
-# 				if xj != None:
-# 					if (xtypes != None and get_name(xj) == xtypes) or xtypes == None:
-# 						return f(xi, xj)
-# 				return f(xi)
-# 		return f()
-
-# 	def store(self, x):
-# 		self.history.insert(0, x)
-
-# 	def __call__(self, statement):
-# 		relation = statement[0]
-# 		inputs = statement[1:len(statement)]
-# 		output = self.compute(relation, inputs)
-# 		data = Dict(['function', 'input', 'output'])
-# 		data['function'] = relation
-# 		data['input'] = [self.patterns[inputs[i]] for i in range(len(inputs))]
-# 		data['output'] = output
-# 		self.store(data)
-# 		return output
-
-# def random_subset(X, s):
-# 	Y = []
-# 	V = []
-# 	for x in X:
-# 		V.append(x)
-
-# 	for i in range(s):
-# 		j = rr(len(V))
-# 		Y.append(V[j])
-# 		del V[i]
-# 	return Y
-
-# def transpose(X):
-# 	if all_equal(to_all(X, get_name)) and get_name(X[0]) == 'dict':
-# 		output = Dict(X[0].keys())
-# 		for i in range(len(X)):
-# 			x = X[i]
-# 			for j in x.keys():
-# 				if output[j] == None:
-# 					output[j] = []
-# 				output[j].append(x[j])
-# 		return output
-
-# sys = System()
-# sys.add(Matrix([5]), 'A')
-# sys.add(Matrix([5], 1), 'B')
-# sys.add([5], 's')
-
-# y = sys(['union', 'A', 'B'])
-# y = sys(['intersection', 'A', 'B'])
-# y = sys(['compliment', 'A', 'B'])
-
-# d = sys.history
-# print(transpose(d))
-# print(y)
+	def input(self, value):
+		keys = self.biases.keys()
+		key = None
+		for i in range(len(keys)-1):
+			k1 = keys[i]
+			k2 = keys[i+1]
+			if int(k1) <= value < int(k2):
+				if abs(int(k1) - value) >= abs(int(k2) - value):
+					key = str(k2)
+				else:key = str(k1)
+		super().input(str(key))

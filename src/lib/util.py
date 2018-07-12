@@ -6,6 +6,16 @@ from random import randrange as rr
 import utilities
 import math 
 
+def merge(space='', strings=[]):
+	y = ''
+	c = 0
+	for s in strings:
+		y += s
+		if c < len(strings)-1:
+			y += space
+		c += 1
+	return y
+
 def mul(*X):
 	y = 1
 	if len(X) == 1:
@@ -58,7 +68,9 @@ def logistic(x):
 	  return 1 / (1 + np.exp(-x))
 def gaussian(x, height=1, center=0, deviation=1):
 	return height * np.exp(- np.power(x-center, 2) / np.power(2*deviation, 2))
-	
+def softplus(x):
+	return np.log(1 + np.exp(x))
+
 def sort(d):
 	if isinstance(d, Dict):
 		keys = list(d.keys())
