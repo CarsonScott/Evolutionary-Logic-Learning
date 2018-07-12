@@ -2,9 +2,8 @@
 
 Inference rules are at the core of what it means to understand a language, as they give rise to additional knowledge that is not contained by any one element of a language but rather is derived through the interaction between those elements when they are composed in a sequence.
 
-Inference-rule learning (IRL) is a two-step function where a topology is constructed from a set of variables that are observed and recorded over a finite period of time, and then the measurements are analyzed to derive a set of inferential equations (statements expressed in metalogic, a construction language used by a system internally to optimize the process of comparison, assessment, and construction of complex data types. T
-
-Metalogical statements, or those of any type of language described here, combine operations with sets of variable symbols that are arranged in a specific orders, generate functions that take the given expression and map its structure to a high level model. By preserving the grammar of low-level structures, the rules of inference are necessarily maintained and integrated into the rules of higher-level languages.  
+Inference-rule learning (IRL) is a two-step function where a topology is constructed from a set of variables that are observed and recorded over a finite period of time, and then the measurements are analyzed to derive a set of inferential equations, or statements expressed in a metalogic, a construction language used internally by the system to optimize the handling of complex data types.
+Statements in any language combine operation and variable symbols in specific sequences to generate functions, which take the given statement and map its structure into higher levels. Preserving the grammar of lower-level structures in this way causees the inference rules to transfer upward and shape the grammar at higher levels, due to the fact that each structure necessarily satisfies the grammar at its own level before mapping to higher levels and constructing the rules of that level. 
 
 
 __Inference-Rule Example:__
