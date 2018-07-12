@@ -4,7 +4,7 @@ Inference rules are at the core of what it means to understand a language, as th
 
 Inference-rule learning (IRL) is a two-step process, in which a topology is built on a set of variables, and then explicitly converted into sets of inferential equations that can be expressed through (meta-logical) statements.
 
-*_Inference Rule Example_*
+__Inference-Rule Example:__
 
     "if a and b and c, then infer d."
     
