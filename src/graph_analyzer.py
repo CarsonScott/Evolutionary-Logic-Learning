@@ -65,6 +65,7 @@ space = Space()
 for i in range(-5, 5):
 	x = gaussian(i)
 	space.append(x)
+	print(space)
 
 space.sort()
 kernel = Kernel('mean')

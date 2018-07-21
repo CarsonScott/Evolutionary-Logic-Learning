@@ -113,7 +113,6 @@ class Generator(Memory):
 			self.state = 1
 		else:self.state = 0
 
-
 		if self.input == ' ' or len(self.history) == 0:
 			self.history.append(Generator(0))
 			output = self.history
@@ -219,3 +218,4 @@ g = Generator(0)
 X = 'a and b; c and d;'
 for i in range(len(X)):
 	print(g.update(X[i]))
+print(g.update(''))

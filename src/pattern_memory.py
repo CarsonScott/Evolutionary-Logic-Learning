@@ -246,8 +246,6 @@ if __name__ == "__main__":
 
 	# Memory
 	memory = PatternMemory()
-
-
 	memory['get'] = get
 	memory['set'] = set
 	memory['store'] = memory.__setitem__
@@ -259,12 +257,12 @@ if __name__ == "__main__":
 	memory['d'] = 66
 	memory['e'] = -2
 
+	memory['pattern'] = ('*', 'a', 'd', 'b')
+	print(memory('pattern'))
 
-	y = memory.convert('a')
-	print(y)
-	# Structures
-	memory['pattern'] = ('*', 'a', 'd')
-	memory['model'] = memory.convert(memory.translate('pattern'))
-	y = memory(('get', 'model', string('f')))
-	print(y)
+	# # memory['model'] = memory.convert(memory.translate('pattern'))
+	# # y = memory(('get', 'model', string('f')))
+	# print(y)
+
+
 	# print(memory.compress(memory.translate('pattern')))

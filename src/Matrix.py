@@ -35,9 +35,8 @@ def associate(*X):
 		return Y[0]
 	return Matrix(Y)
 def distribute(*X):
+
 	v = X[0]
-	if not iterable(v):
-		v = v
 	Y = Matrix()
 	for j in range(1, len(X)):
 		y = Matrix(X[j])
@@ -50,6 +49,9 @@ def distribute(*X):
 	if len(Y) == 1:
 		Y = Y[0]
 	return Y
+def execute(f, X):
+	return [f(x) for x in X]
+
 class Matrix(list):
 	def __getitem__(self, X):
 		if iterable(X):
@@ -115,78 +117,3 @@ def shape(matrix):
 			leaf = False
 	if leaf:return size
 	return Matrix(output)
-
-y = Matrix([1, 2, 3, [3,4,[89, [3]]]])
-
-y = shape(y)
-y = compose(shape(y), 2)
-print(compose(shape(y), 4))
-# a = Matrix([2, 2, 5, 7])
-# b = Matrix([1, 43])
-# c = Matrix([3, 4, 3, 2])
-
-# print('reverse(a)')
-# print(reverse(a))
-# print('combine(a, b)')
-# print(combine(a, b))
-# print('associate(a, c)')
-# print(associate(a, c))
-# print('combine(a, b)')
-# print(combine(a, b))
-# print('distribute(a, b)')
-# print(distribute(a, b))
-# print(create([2, 3], 3) + create([1, 2], 3), '\n\n')
-# print(create(4, [2, 3]) + create(3, [1, 2]), '\n\n')
-# print(a + c, '\n\n')
-
-# class Function(Matrix):
-# 	def __init__(self, matrix=[]):
-# 		super().__init__(matrix)
-# 		self.indices = Dict()
-# 		for i in range(len(matrix)):
-# 			x,y = matrix[i]
-# 			self.set(x, y)
-# 	def get(self, input):
-# 		if input in self.indices.keys():
-# 			return self.indices[input]
-# 		return input
-# 	def set(self, input, output):
-# 		index = len(self)
-# 		self.append(create(input, output))
-# 		if input not in self.indices.keys():
-# 			self.indices[input] = create()	
-# 		self.indices[input].append(index)
-# 	def index(self, input):
-# 		index = self.get(input)
-# 		return index
-# 	def output(self, index):
-# 		output = self[index, 1]
-# 		return output
-# 	def __call__(self, input):
-# 		indices = self.index(input)
-# 		outputs = Matrix()
-# 		for i in indices:
-# 			output = self.output(i)
-# 			outputs.append(output)
-# 		if len(outputs) == 1:
-# 			outputs = outputs[0]
-# 		return outputs
-
-# if __name__ == "__main__":
-# 	A = create([1, 1, 1])
-# 	B = create([2, 2, 2])
-# 	C = create([3, 3, 3])
-# 	D = associate(A, B)
-# 	print(D)
-# 	E = distribute(to_matrix(54), D)
-# 	print(E)
-# 	# # E = D(associate, [4, 4, 4])
-# 	# y = A(distribute, D)
-# 	# print(y)
-# 	X = Function()
-
-# 	X.set(0, 111)
-# 	X.set(1, 1214)
-# 	X.set(0, 2135)
-
-# 	print(X(0))

@@ -18,6 +18,15 @@ class Pattern(Dict):
 			for k in keys:
 				self.weights[key][k] = rr(1, 10)/1000
 
+	def input(self, key):
+		if key in self.active:
+			del self.active[self.active.index(key)]
+		self.active.append(key)
+		if len(self.active) > self.size:
+			del self.active[0:len(self.active)-self.size]
+		self.performance = self.compute_performance(key)
+		self.fitness = self.compute_fitness()
+		
 	def compute_output(self, key):
 		x = key in self.active
 		b = self.biases[key]
@@ -34,15 +43,6 @@ class Pattern(Dict):
 	def compute_fitness(self):
 		fitness = self.fitness + self.lrate * self.performance * softmax(-abs(self.fitness))
 		return fitness
-
-	def input(self, key):
-		if key in self.active:
-			del self.active[self.active.index(key)]
-		self.active.append(key)
-		if len(self.active) > self.size:
-			del self.active[0:len(self.active)-self.size]
-		self.performance = self.compute_performance(key)
-		self.fitness = self.compute_fitness()
 	
 	def compute(self):
 		Y = Dict()

@@ -149,62 +149,64 @@ class EquationMemory(PatternMemory):
 		# world_reward = logistic(size - lower_bound) + logistic(upper_bound - size)
 		
 #######################################################################################################		
-		# total = 0
-		# count = 0
-		# score = 0
-		# outputs = []
-		# for i in range(len(data)):
-		# 	x = data[i]
-		# 	k = keys[i]
-		# 	y = -1 / (1/2 * len(data))
-		# 	if self.identify(self.translate(k)) == 'pattern':
-		# 		try:
-		# 			y += self.compute(x)
-		# 		except:
-		# 			y = -1
-		# 		if y in [True, False]:
-		# 			if y == True: x = 1
-		# 			if y == False: x = -1
-		# 	y *= self.biases[k]
-		# 	outputs.append(y)
-		# 	total += y
-		# score = logistic(sum(outputs))
+		total = 0
+		count = 0
+		score = 0
+		outputs = []
+		keys = self.keys()
+		data = list(self.values())
+		for i in range(len(data)):
+			x = data[i]
+			k = keys[i]
+			y = -1 / (1/2 * len(data))
+			if self.identify(self.translate(k)) == 'pattern':
+				try:
+					y += self.compute(x)
+				except:
+					y = -1
+				if y in [True, False]:
+					if y == True: x = 1
+					if y == False: x = -1
+			y *= self.biases[k]
+			outputs.append(y)
+			total += y
+		score = logistic(sum(outputs))
 
-		# to_remove = []
-		# to_reduce = []
-		# to_assign = []
-		# for i in range(len(data)):
-		# 	k = keys[i]
-		# 	b = self.biases[k]
-		# 	db = 0.1 * outputs[i] * score * (1-tanh(abs(b)))
-		# 	self.biases[k] = b + db
-		# 	if self.thresholds[world] != None:
-		# 		if self.identify(self.translate(k)) == 'pattern':
-		# 			if self.biases[k] < self.thresholds[world]:
-		# 				to_remove.append(k)
-		# 			elif self.biases[k] > .01:#-self.thresholds[world]:
-		# 				to_reduce.append(k)
+		to_remove = []
+		to_reduce = []
+		to_assign = []
+		for i in range(len(data)):
+			k = keys[i]
+			b = self.biases[k]
+			db = 0.1 * outputs[i] * score * (1-tanh(abs(b)))
+			self.biases[k] = b + db
+			if self.thresholds[world] != None:
+				if self.identify(self.translate(k)) == 'pattern':
+					if self.biases[k] < self.thresholds[world]:
+						to_remove.append(k)
+					elif self.biases[k] > .01:#-self.thresholds[world]:
+						to_reduce.append(k)
 
-		# if world+1 in self.worlds.keys():
-		# 	for i in range(len(to_reduce)):
-		# 		key = to_reduce[i]
-		# 		pattern = self.compress(key)
-		# 		self.remove(world, key)
-		# 		self[random_str(5-world)] = pattern, world+1
+		if world+1 in self.worlds.keys():
+			for i in range(len(to_reduce)):
+				key = to_reduce[i]
+				pattern = self.compress(key)
+				self.remove(world, key)
+				self[random_str(5-world)] = pattern, world+1
 
-		# if self.limits[world][0] != None:
-		# 	if len(data)-len(to_remove) > self.limits[world][0]:
-		# 		for i in to_remove:
-		# 			self.remove(world, i)
+		if self.limits[world][0] != None:
+			if len(data)-len(to_remove) > self.limits[world][0]:
+				for i in to_remove:
+					self.remove(world, i)
 
-		# if self.limits[world][1] == None or len(data) < self.limits[world][1]:
-		# 		unassigned = self.worlds['unassigned']
-		# 		if len(unassigned) > 0:
-		# 			key = unassigned[rr(len(unassigned))]
-		# 			self.remove('unassigned', key)
-		# 		else:key = random_str(4)
-		# 		self[key] = self.generate(world), world
-		# return score
+		if self.limits[world][1] == None or len(data) < self.limits[world][1]:
+				unassigned = self.worlds['unassigned']
+				if len(unassigned) > 0:
+					key = unassigned[rr(len(unassigned))]
+					self.remove('unassigned', key)
+				else:key = random_str(4)
+				self[key] = self.generate(world), world
+		return score
 
 	def measure(self, pattern):
 		X = []

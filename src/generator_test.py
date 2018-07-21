@@ -1,4 +1,4 @@
-from Matrix import *
+from matrix import *
 from Generator import *
 
 class Structure(Memory):

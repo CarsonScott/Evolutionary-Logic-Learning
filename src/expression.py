@@ -190,3 +190,4 @@ class ExpressionTree(EmbeddedList):
 				string += str(data)
 		return string + ')' + marker
 
+tree=ExpressionTree()

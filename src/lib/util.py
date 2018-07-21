@@ -10,7 +10,9 @@ def merge(space='', strings=[]):
 	y = ''
 	c = 0
 	for s in strings:
-		y += s
+		if isinstance(s, list):
+			s = merge(space, s)
+		y += str(s)
 		if c < len(strings)-1:
 			y += space
 		c += 1
@@ -41,7 +43,7 @@ def is_matrix(X):
 def iterable(X):
 	try:
 		len(X)
-		return True
+		return not isinstance(X, str)
 	except:
 		return False
 

@@ -19,7 +19,7 @@ def random_str(size):
 			done = True
 	return y
 
-class EquationMemory(PatternMemory):
+class EquationMemory(list):
 	def __init__(self):
 		super().__init__()
 		self.thresholds = Dict()
@@ -28,29 +28,30 @@ class EquationMemory(PatternMemory):
 		self.biases = Dict()
 		self.worlds = Dict()
 		self.roots = Dict()
-		self['+'] = add
-		self['-'] = sub
-		self['*'] = mul
-		self['/'] = div
-		self['^'] = pow
-		self['>'] = gt
-		self['<'] = lt
-		self['='] = eq
-		self['!='] = neq
-		self['>='] = gteq
-		self['<='] = lteq
-		self['get'] = get
-		self['set'] = set
-		self['store'] = self.__setitem__
+		self.memory = PatternMemory()
+		self.memory['+'] = add
+		self.memory['-'] = sub
+		self.memory['*'] = mul
+		self.memory['/'] = div
+		self.memory['^'] = pow
+		self.memory['>'] = gt
+		self.memory['<'] = lt
+		self.memory['='] = eq
+		self.memory['!='] = neq
+		self.memory['>='] = gteq
+		self.memory['<='] = lteq
+		self.memory['get'] = get
+		self.memory['set'] = set
+		self.memory['store'] = self.__setitem__
 
 	def __setitem__(self, key, *data):
 		x = list(data)
 		world = None
 		if isinstance(x[0], tuple):
 			value, world = x[0]
-			# self.insert(world, key)
+			self.insert(world, key)
 		else:value = x[0]
-		super().__setitem__(key, value)
+		self.insert(key, value)
 
 	def set_weight(self, source, target, weight=1):
 		self.weights[source][target] = weight
@@ -72,13 +73,17 @@ class EquationMemory(PatternMemory):
 		if world not in self.worlds.keys():
 			self.set_world(world)
 		if key not in self.get_world(world):
-			self.worlds[world].appen
+			self.worlds[world].append(key)
 		self.worlds[world].append(key)
+		if world not in self.limits:
+			self.limits.append([None, None])
 	
 	def remove(self, world, key):
 		index = self.worlds[world].index(key)
 		del self.worlds[world][index]
+		# del self.limits[world]
 		del self.biases[key]
+		del self.memory[key]
 
 	def generate(self, world):
 		inputs = []
@@ -102,7 +107,10 @@ class EquationMemory(PatternMemory):
 
 	def update(self, world):
 		keys = self.get_world(world)
-		data = self.translate(keys)
+		if keys in self.memory.keys():
+			data = self.memory.translate(keys)
+		else:
+			data = []
 		total = 0
 		count = 0
 		score = 0
@@ -111,7 +119,7 @@ class EquationMemory(PatternMemory):
 			x = data[i]
 			k = keys[i]
 			y = -1 / (1/2 * len(data))
-			if self.identify(self.translate(k)) == 'pattern':
+			if self.identify(self.memory.translate(k)) == 'pattern':
 				try:
 					y += self.compute(x)
 				except:
@@ -135,10 +143,10 @@ class EquationMemory(PatternMemory):
 			db = 0.1 * outputs[i] * score * (1-tanh(abs(b)))
 			self.biases[k] = b + db
 			if self.thresholds[world] != None:
-				if self.identify(self.translate(k)) == 'pattern':
+				if self.identify(self.memory.translate(k)) == 'pattern':
 					if self.biases[k] < self.thresholds[world]:
 						to_remove.append(k)
-					elif self.biases[k] > .01:#-self.thresholds[world]:
+					elif self.biases[k] > .01-self.thresholds[world]:
 						to_reduce.append(k)
 
 		if world+1 in self.worlds.keys():
@@ -146,27 +154,29 @@ class EquationMemory(PatternMemory):
 				key = to_reduce[i]
 				pattern = self.compress(key)
 				self.remove(world, key)
-				self[random_str(3)] = pattern, world+1
+				self.memory[random_str(3)] = pattern, world+1
 
-		if self.limits[world][0] != None:
-			if len(data)-len(to_remove) > self.limits[world][0]:
-				for i in to_remove:
-					self.remove(world, i)
+		if world in self.limits.keys():
+			if self.limits[world][0] != None:
+				if len(data)-len(to_remove) > self.limits[world][0]:
+					for i in to_remove:
+						self.remove(world, i)
 
-		if self.limits[world][1] == None or len(data) < self.limits[world][1]:
-				key = random_str(4)
-				self[key] = self.generate(world), world
-				print(self.biases[key])
+			if self.limits[world][1] == None or len(data) < self.limits[world][1]:
+					key = random_str(4)
+					self.memory[key] = self.generate(world), world
 		return score
 
 memory = EquationMemory()
 
-worlds = 5
+worlds = 7
 for i in range(worlds):
-	threshold = 1/pow(worlds-i, 2)
+	threshold = 1/pow(worlds, 2)
 	min_capacity = 3
-	max_capacity = 3 * (worlds-i)
-	memory.set_world(i, threshold,(min_capacity, max_capacity))
+	max_capacity = 3 * (worlds)
+	memory.set_world(i, threshold)
+
+print(memory.limits)
 
 inputs = []
 for i in range(5):
@@ -178,17 +188,13 @@ log = open('log.txt', 'w')
 for i in range(1000):
 	s = str(i) + '	'
 	c = 0
-	for j in range(len(memory.worlds.keys())):
-		print(memory.worlds[4])
-		score = memory.update(j) / memory.limits[j][1]
-		world = memory.get_world(j)
-		s += str(score) + '	'
-		c += 1
-	#print(s)
+	# for j in range(len(memory.worlds.keys())):
+		
+	print(s)
 	log.write(s + '\n')
 log.close()
 
 
 world = memory.worlds[0]
 for x in world:
-	print(x, memory.biases[x], memory.translate(x))
+	print(x, memory.biases[x], memory.memory.translate(x))
