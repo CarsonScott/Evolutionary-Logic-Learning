@@ -67,7 +67,6 @@ def identify_model(x):
 		if equivalent(x.keys(), v):
 			return key
 
-
 def Def(x):
 	template = Dictionary()
 	template + ['statement', 'model']
@@ -134,22 +133,10 @@ def Def(x):
 	else:return x
 	return template
 
-def Mod(statement):
-	model = Template()
-	if isinstance(statement, tuple):
-		function, input = statement
-		model = {'function':function, 'input':input}
-	elif isinstance(statement, list):
-		source, target = statement
-		source = Mod(source)
-		model = {'source':source, 'target':target}
-	else:model = statement
-	return model
-
 def is_dict(x):
 	return isinstance(x, dict)
 
-def Template(statement=None):
+def create_template(statement=None):
 	template = Dictionary()
 	template['model'] = Dictionary()
 	template['statement'] = None
@@ -160,7 +147,7 @@ def Template(statement=None):
 class Function(Dictionary):
 
 	def __init__(self, statement='', inputs=[]):
-		self['template'] = Template(statement)
+		self['template'] = create_template(statement)
 		self['inputs'] = inputs
 
 	def __call__(self, X=None):
@@ -180,8 +167,8 @@ class Function(Dictionary):
 			return self.execute(self[function])
 		elif isinstance(function, Function):
 			return self.execute(function['template'])
-		elif get_type(function) == 'variable' and Template(function) != None:
-			return self.execute(Template(function)) 
+		elif get_type(function) == 'variable' and create_template(function) != None:
+			return self.execute(create_template(function)) 
 	
 		model = None
 		if is_dict(function):
@@ -220,8 +207,7 @@ class Function(Dictionary):
 			else:x = self.execute(x)
 			if callable(f):return f(x)
 		
-		else:
-			return function['model']
+		else:return function['model']
 
 class Operator(Dictionary):
 	

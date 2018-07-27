@@ -1,6 +1,5 @@
 from rule_generator import *
-from function_template import *
-import matplotlib.pyplot as plt
+from function_language import *
 
 class Generator(Dictionary):
 	pass
