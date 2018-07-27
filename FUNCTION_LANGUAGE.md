@@ -15,20 +15,20 @@ __1. Function calls__
 __2. If Statements__
 
 		"x:y"
-- executes x (statement) given y (condition).
+- executes y (statement) given x (condition).
 
 
 __3. Else Statements__
 		
 		"x:y/z"
-- executes x (statement) given y (condition),
+- executes y (statement) given x (condition),
   otherwise executes z (statement).
 
 __4. If-Else Statements__
 
 		"x:y /: a:b"
-- executes x (statement) given y (condition), 
-  otherwise executes a (statement) given b (condition).
+- executes y (statement) given x (condition), 
+  otherwise executes b (statement) given a (condition).
 
 ### Example
 
