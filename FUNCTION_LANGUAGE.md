@@ -7,29 +7,38 @@ The function language is a compact scripting language that runs within python. T
 
 __1. Function calls__
 
-		"f(x)"	
+"f(x)"
+		
+	f(x)
 
-- passes x (variable) to f (function).
+__2. Variable Declarations__
 
+"y=f(x)"
+
+	y = f(x)
 
 __2. If Statements__
 
-		"x:y"
-- executes y (statement) given x (condition).
+"z: y=f(x)"
 
+	if z:
+		y = f(x)
 
 __3. Else Statements__
 		
-		"x:y/z"
-- executes y (statement) given x (condition),
-  otherwise executes z (statement).
+"z: y=f(x) / y=g(x)"
+	
+		if z:
+			y = f(x)
+		else:
+			y = g(x)
+
 
 __4. If-Else Statements__
 
-		"x:y /: a:b"
-- executes y (statement) given x (condition), 
-  otherwise executes b (statement) given a (condition).
+"z: y=f(x) /: h: y=g(x)"
 
-### Example
-
-Each statement in the language is defined by a dictionary structure with additional functionality for parsing and executing script-code. Statements built using a class called Function.
+		if x:
+			y = f(x)
+		elif h:
+			y = g(x)
