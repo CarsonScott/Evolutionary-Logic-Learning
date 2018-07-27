@@ -1,6 +1,9 @@
 # Function Language
 
-The function language is a compact scripting language that runs within python. The language revolves around four main phrase-structures that are used to express a strong fundamental logic. The four structures are as follows:
+
+### Overview
+
+The function language is a compact scripting language that runs within python. The language revolves around four main phrase-structures that are used to express a strong fundamental logic. The four structures are listed below along with the corresponding script-code and a description of the logical process that they depict. 
 
 __1. Function calls__
 		"f(x)"
@@ -17,3 +20,7 @@ __3. Else Statements__
 __4. If-Else Statements__
 		"a:b /: c:d"
 		- executes b given a, otherwise executes d given c.
+
+### Example
+
+Each statement in the language is defined by a dictionary, with additional structure for parsing and executing script-code.
