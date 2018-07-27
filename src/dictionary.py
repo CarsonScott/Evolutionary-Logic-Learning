@@ -47,7 +47,6 @@ class Dictionary(Dict):
 
 			self[key] = value
 		elif identify(key) == 'list':
-			# value = None
 			for i in key:
 				self + i
 				if identify(value) == 'list':

@@ -4,16 +4,19 @@ import matplotlib.pyplot as plt
 
 class Generator(Dictionary):
 	pass
+
 class Iterator(Generator):
 	def __call__(self, X=None):
 		if 'data' not in self:
 			self['data'] = False
 		self['data'] = not self['data']
 		return self['data']
+
 class Random(Generator):
 	def __call__(self, X=None):
 		self['data'] = rr(10)
 		return self['data']
+
 class Counter(Iterator):
 	def __call__(self, X):
 		if 'data' not in self:
@@ -22,6 +25,7 @@ class Counter(Iterator):
 		self['data'] = X
 		self['count'] = self['count'] + self['data']
 		return self['count']
+
 class Detector(Generator):
 	def __call__(self, X):
 		if 'measure' not in self:
@@ -70,6 +74,7 @@ for j in range(1000):
 	for i in range(len(inputs)):
 		record = pattern(inputs[i])
 		learner.compute(record)
+
 rules = learner.generate()
 order = Ordering(inputs)
 
@@ -97,6 +102,7 @@ class Agent(Function):
 				self[k] = v
 				v = None
 				k = x
+
 	def get(self, X):
 		Y = []
 		k = None

@@ -1,4 +1,5 @@
 from dictionary import *
+from lib.relations import *
 
 def get_type(object):
 	if identify(object) == 'tuple':
@@ -54,10 +55,61 @@ def plugin(data, function):
 		return list(output)
 	return output
 
+def identify_model(x):
+	if not isinstance(x, Dictionary):
+		return None
+	types = Dictionary({'store-statement':('source', 'target'),
+		 				 'else-statement':('statement', 'output'),
+		 				 'call-statement':('function', 'input'),
+		 				   'if-statement':('condition', 'output')})
+	for key in types.keys():
+		v = types[key]
+		if equivalent(x.keys(), v):
+			return key
+
+
 def Def(x):
 	template = Dictionary()
 	template + ['statement', 'model']
-	if '=' in x:
+
+	if '/' in x:
+		i = x.index('/')
+		c = x[:i]
+		s = x[i+1:]
+		mc = Def(c)
+		ms = Def(s)
+		statement = [c, s]
+		model = Dictionary({'statement':c, 'output':s})
+		statement[0] = mc['statement']
+		model['statement'] = mc['model']
+		if mc == c: 
+			return None
+		if ms != s:
+			statement[1] = ms['statement']
+			model['output'] = ms['model']
+		template['statement'] = statement
+		template['model'] = model
+
+	elif ':' in x:
+		i = x.index(':')
+		c = x[:i]
+		s = x[i+1:]
+		mc = Def(c)
+		ms = Def(s)
+		statement = [c, s]
+		model = Dictionary({'condition':c, 'output':s})
+		if c == '': 
+			return Def(s)
+		if mc != c:
+			statement[0] = mc['statement']
+			model['condition'] = mc['model']
+		if ms != s:
+			statement[1] = ms['statement']
+			model['output'] = ms['model']
+		template['statement'] = statement
+		template['model'] = model
+
+	elif '=' in x:
 		i = x.index('=')
 		s = x[:i]
 		t = x[i+1:]
@@ -68,6 +120,7 @@ def Def(x):
 		else:
 			template['statement'] = [s, t]
 			template['model'] = Dictionary({'source':s, 'target':t})
+
 	elif '(' in x and ')' in x:
 		i = x.index('(')
 		j = len(x) - x[::-1].index(')') - 1
@@ -85,7 +138,7 @@ def Mod(statement):
 	model = Template()
 	if isinstance(statement, tuple):
 		function, input = statement
-		model = {'function':function, 'input':input}	
+		model = {'function':function, 'input':input}
 	elif isinstance(statement, list):
 		source, target = statement
 		source = Mod(source)
@@ -101,8 +154,7 @@ def Template(statement=None):
 	template['model'] = Dictionary()
 	template['statement'] = None
 	if statement != None:
-		try:return Def(statement)
-		except:return None
+		return Def(statement)
 	return template
 
 class Function(Dictionary):
@@ -131,35 +183,45 @@ class Function(Dictionary):
 		elif get_type(function) == 'variable' and Template(function) != None:
 			return self.execute(Template(function)) 
 	
-		type = None
-		statement = []
+		model = None
 		if is_dict(function):
-			if 'statement' in function and 'model' in function:
-				statement = function['statement']
-				function = function['model']
-		if is_dict(function):
-			if 'source' in function and 'target' in function:type = 0
-			elif 'function' in function and 'input' in function:type = 1
+			if equivalent(['statement', 'model'], function.keys()):
+				model = function['model']
+			else:model = function
 
-		if type == None:
-			if is_iterable(function):
-				F = list(function)
-			else:return function	
-		else:F = statement
+		type = identify_model(model)
+		if type == None and identify_model(function) != None:
+			type = identify_model(function)
+			model = function
+		elif type == None:return function
+		
+		if type == 'else-statement':
+			s,y = model['statement'], model['output']
+			s = self.execute(s)
+			if s != None:return s
+			return self.execute(y)
 
-		if type == 0:
-			a,b = F
+		elif type == 'if-statement':
+			c,y = model['condition'], model['output']
+			c = self.execute(c)
+			if c:return self.execute(y)
+
+		elif type == 'store-statement':
+			a,b = model['source'], model['target']
 			self[a] = self.execute(b)
 			return self[a]
-		elif type == 1:
-			f,x = F
+
+		elif type == 'call-statement':
+			f,x = model['function'], model['input']
 			f = self.execute(f)
 			if is_iterable(x):
 				for i in range(len(x)):
 					x[i] = self.execute(x[i])
 			else:x = self.execute(x)
 			if callable(f):return f(x)
-		else:return F
+		
+		else:
+			return function['model']
 
 class Operator(Dictionary):
 	
