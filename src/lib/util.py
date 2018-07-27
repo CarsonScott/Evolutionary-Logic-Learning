@@ -6,6 +6,7 @@ from random import randrange as rr
 import utilities
 import math 
 
+
 def merge(space='', strings=[]):
 	y = ''
 	c = 0
@@ -17,6 +18,10 @@ def merge(space='', strings=[]):
 			y += space
 		c += 1
 	return y
+
+def remove(string, char):
+	return merge('', string.split(char))
+
 
 def mul(*X):
 	y = 1

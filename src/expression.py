@@ -10,6 +10,7 @@ class EmbeddedList(list):
 			self.append(value)
 	def expand(self, index):
 		self[index] = EmbeddedList(1, self[index])
+	def reduce(self, index):
 
 GRAMMAR_SYMBOLS = ['(', ')', ';', ' ']
 CONNECTIVE_SYMBOLS = ['^', '|', '<']

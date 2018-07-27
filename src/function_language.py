@@ -68,6 +68,7 @@ def identify_model(x):
 			return key
 
 def Def(x):
+	x = remove(x, ' ')
 	template = Dictionary()
 	template + ['statement', 'model']
 
@@ -150,7 +151,8 @@ class Function(Dictionary):
 		self['template'] = create_template(statement)
 		self['inputs'] = inputs
 
-	def __call__(self, X=None):
+	def __call__(self, *X):
+		X = list(X)
 		if isinstance(X, list):
 			for i in range(len(X)):
 				key = self['inputs'][i]
@@ -184,9 +186,11 @@ class Function(Dictionary):
 		
 		if type == 'else-statement':
 			s,y = model['statement'], model['output']
-			s = self.execute(s)
-			if s != None:return s
-			return self.execute(y)
+			if is_dict(s):
+				c = s['condition']
+				if not self.execute(c):
+					return self.execute(y)
+				else:return self.execute(s)
 
 		elif type == 'if-statement':
 			c,y = model['condition'], model['output']
