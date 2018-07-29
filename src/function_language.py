@@ -67,7 +67,7 @@ def identify_model(x):
 		if equivalent(x.keys(), v):
 			return key
 
-def Def(x):
+def define_template(x):
 	x = remove(x, ' ')
 	template = Dictionary()
 	template + ['statement', 'model']
@@ -76,8 +76,8 @@ def Def(x):
 		i = x.index('/')
 		c = x[:i]
 		s = x[i+1:]
-		mc = Def(c)
-		ms = Def(s)
+		mc = define_template(c)
+		ms = define_template(s)
 		statement = [c, s]
 		model = Dictionary({'statement':c, 'output':s})
 		statement[0] = mc['statement']
@@ -94,12 +94,12 @@ def Def(x):
 		i = x.index(':')
 		c = x[:i]
 		s = x[i+1:]
-		mc = Def(c)
-		ms = Def(s)
+		mc = define_template(c)
+		ms = define_template(s)
 		statement = [c, s]
 		model = Dictionary({'condition':c, 'output':s})
 		if c == '': 
-			return Def(s)
+			return define_template(s)
 		if mc != c:
 			statement[0] = mc['statement']
 			model['condition'] = mc['model']
@@ -113,7 +113,7 @@ def Def(x):
 		i = x.index('=')
 		s = x[:i]
 		t = x[i+1:]
-		m = Def(s)
+		m = define_template(s)
 		if s != m:
 			template['statement'] = [m['statement'], t]
 			template['model'] = Dictionary({'source':m['model'], 'target':t})
@@ -126,7 +126,7 @@ def Def(x):
 		j = len(x) - x[::-1].index(')') - 1
 		f = x[:i]
 		x = x[i+1:j]
-		x = Def(x)
+		x = define_template(x)
 		template['statement'] = (f, x)
 		template['model'] = Dictionary({'function':f, 'input':x})
 	elif ',' in x:
@@ -142,7 +142,8 @@ def create_template(statement=None):
 	template['model'] = Dictionary()
 	template['statement'] = None
 	if statement != None:
-		return Def(statement)
+		try:return define_template(statement)
+		except: raise Exception('\nScriptError: "' + str(statement) + '" is not recognized as a statement.\n')
 	return template
 
 class Function(Dictionary):
@@ -152,17 +153,19 @@ class Function(Dictionary):
 		self['inputs'] = inputs
 
 	def __call__(self, *X):
-		X = list(X)
-		if isinstance(X, list):
-			for i in range(len(X)):
-				key = self['inputs'][i]
-				self[key] = X[i]
-		elif isinstance(X, dict):
-			keys = X.keys()
-			for i in keys:
-				self[i] = X[i]
+		self.update(X)
+		return self.compute()
+
+	def compute(self):
 		template = self['template']
 		return self.execute(template)
+
+	def update(self, inputs):
+		if iterable(inputs):
+			for i in range(len(inputs)):
+				x = inputs[i]
+				k = self['inputs'][i]
+				self[k] = x
 
 	def execute(self, function):
 		if function in self:
@@ -242,3 +245,33 @@ class Operator(Dictionary):
 	def size(self):
 		return len(self['input'])
 	
+class Automaton(Function):
+	
+	def __init__(self, statements=[], inputs=[], outputs=[]):
+		templates = []
+		for i in range(len(statements)):
+			template = create_template(statements[i])
+			templates.append(template)
+		self['templates'] = templates
+		self['inputs'] = inputs
+		self['outputs'] = outputs
+
+	def compute(self):
+		templates = self['templates']
+		for i in range(len(templates)):
+			self.execute(templates[i])
+		outputs = self['outputs']
+		return self.gather(outputs)
+
+	def gather(self, outputs):
+		values = []
+		for i in range(len(outputs)):
+			k = outputs[i]
+			v = self[k]
+			values.append(v)
+		return values
+
+	def classify(self, key):
+		if key in self['inputs'] or key in self['outputs']:
+			return 'public'
+		return 'private'

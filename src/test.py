@@ -11,12 +11,28 @@ def OR(x):
 		if i: return True
 	return False
 
+am = Automaton(['c = div(f,g)', 'b = add(d,e)', 'a = mul(b,c)'], ['d', 'e', 'f', 'g'], ['a', 'b', 'c', 'd'])
+am + 'a b c d e f mul add div'.split(' ')
+am['a'] = 0
+am['b'] = 0
+am['c'] = 0
+am['d'] = 0
+am['e'] = 0
+am['f'] = 0
+am['g'] = 0
+am['add'] = ADD
+am['mul'] = MULT
+am['div'] = DIV
+
+y = am(3, 4, 5, 6)
+print(y)
+
 # statement = 'and(a,b): c=f(x) /: or(a,b): c=f(y)'
 statement = 'and(a,b): x / none'
-function = Function(statement)
+function = Function(statement, ['a', 'b', 'c', 'd'])
 
 function['a'] = 1
-function['b'] = 0
+function['b'] = 1
 function['c'] = 0
 function['d'] = 0
 function['none'] = None
@@ -29,14 +45,8 @@ function['and'] = AND
 function['or'] = OR
 function['f'] = ID
 
-y = function()
+y = function(1,1, 0,0)
 print(y)
-
-
-
-
-
-
 
 # from lib.data import *
 # from template import *
