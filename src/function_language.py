@@ -1,6 +1,16 @@
 from dictionary import *
 from lib.relations import *
 
+
+class UNKNOWN:
+	def __init__(self):
+		pass
+	def __repr__(self):
+		return 'unknown'
+
+unknown = UNKNOWN()
+
+
 def get_type(object):
 	if identify(object) == 'tuple':
 		output = 'function'
@@ -142,8 +152,13 @@ def create_template(statement=None):
 	template['model'] = Dictionary()
 	template['statement'] = None
 	if statement != None:
+		if isinstance(statement, Function):
+			return statement
 		try:return define_template(statement)
-		except: raise Exception('\nScriptError: "' + str(statement) + '" is not recognized as a statement.\n')
+		except: 
+			print(statement)
+			print(template)
+			raise Exception('\nScriptError: "' + str(statement) + '" is not recognized as a statement.\n')
 	return template
 
 class Function(Dictionary):
@@ -154,7 +169,10 @@ class Function(Dictionary):
 
 	def __call__(self, *X):
 		self.update(X)
-		return self.compute()
+		# return self.compute()
+		Y = self.compute()
+		if Y == None:Y = unknown
+		return Y
 
 	def compute(self):
 		template = self['template']
@@ -171,9 +189,16 @@ class Function(Dictionary):
 		if function in self:
 			return self.execute(self[function])
 		elif isinstance(function, Function):
-			return self.execute(function['template'])
-		elif get_type(function) == 'variable' and create_template(function) != None:
-			return self.execute(create_template(function)) 
+			return function.compute()
+		elif isinstance(function, str):
+			template = create_template(function)
+			if template != None: 
+				try:return self.execute(template)
+				except: self.execute(template['model'])
+			# else:
+			# 	return tem
+			# except:return template
+			# return self.execute(create_template(function)) 
 	
 		model = None
 		if is_dict(function):
@@ -248,6 +273,7 @@ class Operator(Dictionary):
 class Automaton(Function):
 	
 	def __init__(self, statements=[], inputs=[], outputs=[]):
+		super().__init__()
 		templates = []
 		for i in range(len(statements)):
 			template = create_template(statements[i])
@@ -259,9 +285,11 @@ class Automaton(Function):
 	def compute(self):
 		templates = self['templates']
 		for i in range(len(templates)):
-			self.execute(templates[i])
-		outputs = self['outputs']
-		return self.gather(outputs)
+			y = self.execute(templates[i])
+		outputs = self.gather(self['outputs'])
+		if len(outputs) == 1:
+			outputs = outputs[0]
+		return outputs
 
 	def gather(self, outputs):
 		values = []
