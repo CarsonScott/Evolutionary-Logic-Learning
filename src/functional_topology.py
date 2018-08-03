@@ -1,4 +1,5 @@
 from topology import *
+from function_language import *
 from lib.relations import *
 
 def shuffle(x):
@@ -23,14 +24,19 @@ def reorder(x, k):
 def display(data, indent=''):
 	string = ''
 	if isinstance(data, dict):
-		string = '\n'
+		string = ''
 		for i in data.keys():
 			x = data[i]
-			s = indent + str(i) + ': '
+			s = indent + str(i) + ':  '
 			if isinstance(x, dict) or isinstance(x, list):
-				s += display(x, '	')
+				# ind = indent + '	'
+				ind = ' '
+				if isinstance(x, dict):
+					s += '\n'
+					ind = indent + '	'
+				s += display(x, ind)
 			else:
-				s += ' '
+				s += indent
 				s += str(x)
 			s += '\n'
 			string += s
@@ -43,63 +49,71 @@ def display(data, indent=''):
 		print(string)
 	else:return string
 
-class FunctionalTopology(Dictionary):
-	
-	def __init__(self, inputs, history_size, schedule_size, functions=None, weights=None, thresholds=None):
-		for i in range(len(inputs)):
-			k = str(i)
-			x = inputs[i]
-			if x != None:
-				for j in range(len(x)):
-					x[j] = str(x[j])
+def NULL(*X):
+	pass
 
-			if functions == None:
-				s = None
-			else:s = functions[i]
-			if weights == None:
-				w = [1 for j in inputs]
-			else: w = weights[i]
-			if thresholds == None:
-				t = None
-			else:t = thresholds[i]
-			self.set(k,s,x,w,t)
-		self.init(history_size, schedule_size)
-			
-	
+class FunctionalDictionary(Dictionary):
 	def keys(self):
 		keys = []
 		for i in super().keys():
 			if isinstance(i,str) and '.' not in i:
 				keys.append(i)
 		return keys
-
-	
-	def init(self, history_size, schedule_size):
-		history = []
-		self.set_dependent('', 'history', history)
-		self.set_dependent('', 'capacity', schedule_size)
-		schedule = []
-		self.set_dependent('', 'schedule', schedule)
-		interface = self.set_interface()
-		self.set_dependent('', 'interface', interface)
-		for i in self.keys():
-			targets = self.set_targets(i)
-			self.set_dependent(i, 'targets', targets)
-	
-	
-	def set(self, key, function=None, inputs=None, weights=None, threshold=None):
-		self[key] = unknown
-		self.set_function(key, function)
-		self.set_inputs(key, inputs)
-		self.set_weights(key,  weights)
-		self.set_threshold(key, threshold)
-	
 	def get_dependent(self, key, ext):
 		i = merge('.', [str(key), str(ext)])
 		return self[i]
 	def set_dependent(self, key, ext, val=None):
 		i = merge('.', [str(key), str(ext)])
 		self[i] = val
+
+class FunctionalTopology(FunctionalDictionary):
+	def __init__(self, inputs, capacity, functions=None, weights=None, thresholds=None):
+		for i in range(len(inputs)):
+			k = str(i)
+			x = inputs[i]
+			if x != None:
+				x = [x]
+				for j in range(len(x)):
+					x[j] = str(x[j])
+
+			if functions == None:
+				f = None
+			else:f = functions[i]
+			if weights == None:
+				if x != None:
+					w = [1 for i in range(len(x))]
+				else:w = []
+			else:
+				w = weights[i]
+			
+			if thresholds == None:
+				t = None
+			else:t = thresholds[i]
+			self.set_node(k,f,x,w,t)
+		self.init(capacity)
+	
+	def init(self, capacity):
+		state = None
+		goals = []
+		history = []
+		schedule = []
+		interface = self.set_interface()
+		self.set_dependent('', 'state', state)
+		self.set_dependent('', 'history', history)
+		self.set_dependent('', 'capacity', capacity)
+		self.set_dependent('', 'schedule', schedule)
+		self.set_dependent('', 'interface', interface)
+		self.set_dependent('', 'goals', goals)
+		for i in self.keys():
+			targets = self.set_targets(i)
+			self.set_dependent(i, 'targets', targets)
+	
+	def set_node(self, key, function=None, inputs=None, weights=None, threshold=None):
+		self.set_value(key, unknown)
+		self.set_function(key, function)
+		self.set_inputs(key, inputs)
+		self.set_weights(key,  weights)
+		self.set_threshold(key, threshold)
 	
 	def get_function(self, key):
 		return self.get_dependent(key, 'function')
@@ -118,6 +132,11 @@ class FunctionalTopology(Dictionary):
 		return self.get_dependent(key, 'weights')
 	def set_weights(self, key, weights):
 		self.set_dependent(key, 'weights', weights)
+	
+	def get_state(self):
+		return self.get_dependent('', 'state')
+	def set_state(self, state):
+		self.set_dependent('', 'state', state)
 
 	def get_capacity(self):
 		return self.get_dependent('', 'capacity')
@@ -138,6 +157,11 @@ class FunctionalTopology(Dictionary):
 			if inputs != None and key in inputs:
 				targets.append(i)
 		return targets
+
+	def get_goals(self):
+		return self.get_dependent('', 'goals')
+	def set_goals(self, goals):
+		self.set_dependent('', 'goals', goals)
 	
 	def get_interface(self):
 		return self['.interface']
@@ -178,7 +202,6 @@ class FunctionalTopology(Dictionary):
 			index = schedule.index(key)
 			del schedule[index]
 
-	
 	def get_value(self, key):
 		return self[key]
 	def set_value(self, key, value):
@@ -209,7 +232,6 @@ class FunctionalTopology(Dictionary):
 	def outputs(self):
 		roots = self.get_roots()
 		return self.get_values(roots)	
-
 	def compute(self, key):
 		sources = self.get_inputs(key)
 		if sources != None:
@@ -253,8 +275,9 @@ class FunctionalTopology(Dictionary):
 				else:
 					current = schedule[0]
 					if current != None:
+						self.compute(current)
+						self.set_state(current)
 						done = True
-						output = self.compute(current)
 					self.update_schedule(current)
 		else:
 			history = self.get_history()
@@ -274,13 +297,10 @@ class FunctionalTopology(Dictionary):
 					selection = self.select(targets)
 					self.set_schedule(selection)
 
-	def describe(self):		
+	def describe(self):
 		roots = self.get_roots()
 		outputs = self.get_values(roots)
 		history = self.get_history()
 		schedule = self.get_schedule()
-		description = Dictionary()
-		description['schedule'] = schedule
-		description['history'] = history
-		description['output'] = outputs
-		return description
+		return [history, schedule, outputs]
+		# description = Dictionary({'history':history, , 'schedule':schedule})
