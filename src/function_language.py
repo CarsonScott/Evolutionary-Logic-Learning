@@ -194,7 +194,11 @@ class Function(Dictionary):
 			template = create_template(function)
 			if template != None: 
 				try:return self.execute(template)
-				except: self.execute(template['model'])
+				except: 
+					try:
+						self.execute(template['model'])
+					except:
+						raise Exception(str(template))
 			# else:
 			# 	return tem
 			# except:return template

@@ -1,5 +1,5 @@
-from topology import *
-from function_language import *
+# from topology import *
+from functional_memory import *
 from lib.relations import *
 
 def shuffle(x):

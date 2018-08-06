@@ -1,153 +1,81 @@
-from function_language import *
+from functional_memory import *
+from lib.relations import *
 
-def Null(*x):
-	return None
+class Topology(FunctionMemory):
 
-class Composition:
-	def __init__(self, *functions):
-		self.functions = functions
-	def __call__(self, input):
-		F = self.functions
-		x = input
-		y = None
-		for f in F:
-			y = f(x)
-			x = y
-		return y
+	def __init__(self, objects=[]):
+		super().__init__()
+		self.set_dependent('objects', [])
+		self.set_dependent('functions', [])
+		for i in objects:
+			self.set_object(i)
 
-class Topology(Automaton):
-	
-	def __init__(self, pnt=Dictionary(), pat=Dictionary()):
-		if 'paths' not in self.keys(): 
-			self['paths'] = Dictionary()
-		self.assign_points(pnt)
-		self.assign_paths(pat)
-	def assign_points(self, points):
-		if isinstance(points, dict):
-			for i in points.keys():
-				self.set_point(str(i))
-		elif isinstance(points, list):
-			for i in range(len(points)):
-				self.set_point('x' + str(i))
+	def set_object(self, key, sources=[], targets=[]):
+		self['.objects'].append(key)
+		self.set_sources(key, sources)
+		self.set_targets(key, targets)
 
-	def assign_paths(self, paths):
-		if isinstance(paths, dict):
-			for i in paths.keys():
-				p = paths[i]
-				src = None
-				dst = None
-				rel = None
-				if len(p) == 3:src, rel, dst = p
-				elif len(p) == 2:src, dst = p
-				self.set_path(src, dst, rel)
+	def set_path(self, source, target):
+		path = (source, target)
+		key = merge('.', list(path))
+		self.set_target(source, target)
+		self.set_source(target, source)
 
-		elif isinstance(paths, list):
-			for i in range(len(paths)):
-				p = paths[i]
-				src = None
-				dst = None
-				rel = None
-				if len(p) == 3:src, rel, dst = p
-				elif len(p) == 2:src, dst = p
-				self.set_path(src, dst, 'r' + rel)
-				p = paths[i]
+	def set_source(self, key, source=None):
+		if not self.has(str(key) + '.sources'):
+			self.set_dependent(key, 'sources', [])
+		if source != None:self[str(key) + '.sources'].append(source)
 
-	def get_keys(self):
-		return self.keys() + self['paths'].keys()
-	
-	def get_point(self, key):
-		return self[key]
+	def set_target(self, key, target=None):
+		if not self.has(str(key) + '.targets'):
+			self.set_dependent(key, 'targets', [])
+		if target != None:
+			self[str(key) + '.targets'].append(target)
 
-	def get_path(self, key):
-		return self['paths'][key]
-	
-	def has_point(self, key):
-		return key in self.keys()
+	def set_function(self, key, function):
+		self.set_dependent('functions', key, function)
 
-	def has_path(self, key):
-		return key in self['paths'].keys()
-	
-	def set_point(self, key, val=None):
-		self[key] = val		
+	def get_function(self, key):
+		self.get_dependent('functions', key)
 
-	def set_path(self, src, dst, val=None):
-		key = src, dst
-		if not self.has_path(key):
-			path = list()
-			if val != None:path.append(val)
-			self['paths'][key] = path
-		elif val not in self.get_path(key):
-			self['paths'][key].append(val)
-	
-	def get_neighborhood(self, key, ord=True):
-		nbr = []
-		for i in self['paths'].keys():
-			src, dst = i
-			if src == key:
-				nbr.append(dst)
-			elif not ord:
-				if dst == key:
-					nbr.append(src)
-		return nbr
+	def get_objects(self):
+		return self.get_dependent('objects')
 
-	def get_diagram(self):
-		diagram = Dictionary()
-		for i in self.keys():
-			neighborhood = self.get_neighborhood(i)
-			diagram[i] = neighborhood
-		return diagram
+	def set_objects(self, objects, values=None):
+		self.set_dependent('objects', objects)
+		for i in range(len(objects)):
+			x = None
+			if values != None:
+				x = values[i]
+			self[objects[i]] = x
+	def get_sources(self, key):
+		return self.get_dependent(key, 'sources')
 
-	def store(self, key, val):
-		if not self.has_path(key):
-			path = list()
-			if val != None:
-				path.append(val)
-			self['paths'][key] = path
-		elif val not in self.get_path(key):
-			self['paths'][key].append(val)
+	def set_sources(self, key, sources):
+		for source in sources:
+			self.set_source(key, source)
 
-	def generate(self, src, dst):
-		key = src, dst
-		if not self.has_path(key):
-			Nsrc = self.get_neighborhood(src)
-			for i in range(len(Nsrc)):
-				Ndst = self.get_neighborhood(Nsrc[i])
-				if dst in Ndst:
-					k1 = src, Nsrc[i]
-					k2 = Nsrc[i], dst
-					p1 = self.get_path(k1)
-					p2 = self.get_path(k2)
-					p = Composition(p1, p2)
-					k = src, dst
-					self.store(k, p)
-					return True
-		return False
+	def get_targets(self, key):
+		return self.get_dependent(key, 'targets')
 
-def random_topology(points, paths):
-	top = Topology()
-	for i in range(points):
-		top.set_point(str(i))
-	keys = top.get_keys()
-	for i in range(paths):
-		j = rr(len(keys))
-		k = rr(len(keys))
-		if j != k:
-			top.set_path(keys[j], keys[k])
-	return top
+	def set_targets(self, key, targets):
+		for target in targets:
+			self.set_target(key, target)
 
-def convert_topology(points, paths):
-	top = Topology()
-	
-	for i in data.keys():
-		x = data[i]
-		print(x, data, i)
-		if isinstance(x, tuple):# and len(x) == 3:
-			# src,rel,dst = x
-			if 'paths' not in top.keys():
-				top['paths'] = Dictionary()
-			top['paths'].append(x)
-		elif identify(x) == 'str':
-			top[x] = None
-		else:
-			print('COULD NOT CONVERT: ', x)
-	return top
+	def get_reachable(self, key, depth=None, visited=None):
+		root = False
+		if visited == None: 
+			root = True
+			visited = []
+
+		reachable = [key]
+		visited.append(key)
+		if depth != None: depth -= 1		
+		if depth == None or depth >= 0:
+			reachable = compliment(visited, self.get_targets(key))
+			for i in reachable:
+				R, V = self.get_reachable(i, depth, visited)
+				reachable = union(reachable, R)
+				visited = union(visited, V)
+		if root: return reachable
+		return reachable, visited
