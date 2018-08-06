@@ -20,15 +20,22 @@ class Topology(Function):
 		self.set_source(target, source)
 
 	def set_source(self, key, source=None):
+		if not key in self['.objects']:
+			self.set_object(key)
 		if not self.has(str(key) + '.sources'):
 			self.set_dependent(key, 'sources', [])
-		if source != None:self[str(key) + '.sources'].append(source)
+		if source != None:
+			if source not in self[str(key) + '.sources']:
+				self[str(key) + '.sources'].append(source)
 
 	def set_target(self, key, target=None):
+		if not key in self['.objects']:
+			self.set_object(key)
 		if not self.has(str(key) + '.targets'):
 			self.set_dependent(key, 'targets', [])
 		if target != None:
-			self[str(key) + '.targets'].append(target)
+			if target not in self[str(key) + '.targets']:
+				self[str(key) + '.targets'].append(target)
 
 	def set_function(self, key, function):
 		self.set_dependent('functions', key, function)
@@ -46,26 +53,28 @@ class Topology(Function):
 			if values != None:
 				x = values[i]
 			self[objects[i]] = x
-	def get_sources(self, key):
-		return self.get_dependent(key, 'sources')
 
+	def get_sources(self, key):
+		if self.has(str(key) + '.sources'):	
+			return self.get_dependent(key, 'sources')
+		return []
 	def set_sources(self, key, sources):
 		for source in sources:
 			self.set_source(key, source)
 
 	def get_targets(self, key):
-		return self.get_dependent(key, 'targets')
-
+		if self.has(str(key) + '.targets'):
+			return self.get_dependent(key, 'targets')
+		return []
 	def set_targets(self, key, targets):
 		for target in targets:
 			self.set_target(key, target)
 
 	def get_reachable(self, key, depth=None, visited=None):
-		root = False
+		initial = False
 		if visited == None: 
-			root = True
+			initial = True
 			visited = []
-
 		reachable = [key]
 		visited.append(key)
 		if depth != None: depth -= 1		
@@ -75,8 +84,27 @@ class Topology(Function):
 				R, V = self.get_reachable(i, depth, visited)
 				reachable = union(reachable, R)
 				visited = union(visited, V)
-		if root: return reachable
+		if initial: return reachable
 		return reachable, visited
+
+	def get_interface(self):
+		keys = self.get_objects()
+		inputs = []
+		outputs = []
+		disjoint = []
+		for i in keys:
+			sources = self.get_sources(i)
+			targets = self.get_targets(i)
+
+			x, y = sources == [], targets == []
+			if x and y:
+				disjoint.append(i)
+			elif x:
+				inputs.append(i)
+			elif y:
+				outputs.append(i)
+
+		return inputs,outputs,disjoint
 
 	def set_statement(self, statement):
 		self['.statements'].append(statement)

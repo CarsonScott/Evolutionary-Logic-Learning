@@ -1,6 +1,8 @@
 from functional_memory import *
 from lib.relations import *
 
+class Pointer(str):
+	pass
 
 class UNKNOWN:
 	def __init__(self):
@@ -170,7 +172,6 @@ class Function(FunctionMemory):
 
 	def __call__(self, *X):
 		self.update(X)
-		# return self.compute()
 		Y = self.compute()
 		if Y == None:Y = unknown
 		return Y
@@ -242,6 +243,10 @@ class Function(FunctionMemory):
 		
 		else:return function['model']
 
+	def classify(self, key):
+		if key in self.get_dependent('inputs') or key in self.get_dependent('outputs'):
+			return 'public'
+		return 'private'
 class Operator(Dictionary):
 	
 	def __init__(self, function, types):
@@ -299,8 +304,3 @@ class Automaton(Function):
 			v = self[k]
 			values.append(v)
 		return values
-
-	def classify(self, key):
-		if key in self['inputs'] or key in self['outputs']:
-			return 'public'
-		return 'private'

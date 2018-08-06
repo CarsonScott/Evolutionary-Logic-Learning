@@ -3,3 +3,4 @@ src/*.txt
 src/graphics.py
 src/disposition_agent.py
 src/functional_neural_network.py
+*.bin

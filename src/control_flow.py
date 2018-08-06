@@ -16,11 +16,12 @@ class PathSelector(Topology):
 	def __init__(self):
 		super().__init__()
 		self.set_dependent('function')
-		self.set_dependent('options')
+		self.set_dependent('assign', self.assign)
 		self.set_dependent('state')
 		self.set_dependent('inputs', [])
+		self.set_dependent('options', [])
 		self.set_dependent('outputs', ['.state'])
-		self.set_dependent('statements', ['.state = .function(.options)'])
+		self.set_dependent('statements', ['.state = .function(.options)', ])
 
 	def set_state(self, state):
 		self.set_dependent('state', state)

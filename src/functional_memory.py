@@ -23,9 +23,6 @@ class FunctionMemory(Dictionary):
 			self[i] = values[index]
 			index += 1
 			print(self[i], index)
-		# 	# value = super().__getitem__(i)
-		# 	# values.append(value)
-		# return values
 	def get_dependent(self, key, ext=None):
 		if ext == None:
 			ext = key
