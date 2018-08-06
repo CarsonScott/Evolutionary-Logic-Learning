@@ -1,4 +1,4 @@
-from dictionary import *
+from functional_memory import *
 from lib.relations import *
 
 
@@ -161,11 +161,12 @@ def create_template(statement=None):
 			raise Exception('\nScriptError: "' + str(statement) + '" is not recognized as a statement.\n')
 	return template
 
-class Function(Dictionary):
+class Function(FunctionMemory):
 
 	def __init__(self, statement='', inputs=[]):
-		self['template'] = create_template(statement)
-		self['inputs'] = inputs
+		super().__init__()
+		self.set_dependent('template', create_template(statement))
+		self.set_dependent('inputs', inputs)
 
 	def __call__(self, *X):
 		self.update(X)
@@ -175,14 +176,15 @@ class Function(Dictionary):
 		return Y
 
 	def compute(self):
-		template = self['template']
+		template = self.get_dependent('template')
 		return self.execute(template)
 
 	def update(self, inputs):
 		if iterable(inputs):
-			for i in range(len(inputs)):
+			keys = self.get_dependent('inputs')
+			for i in range(len(keys)):
 				x = inputs[i]
-				k = self['inputs'][i]
+				k = keys[i]
 				self[k] = x
 
 	def execute(self, function):
@@ -199,11 +201,6 @@ class Function(Dictionary):
 						self.execute(template['model'])
 					except:
 						raise Exception(str(template))
-			# else:
-			# 	return tem
-			# except:return template
-			# return self.execute(create_template(function)) 
-	
 		model = None
 		if is_dict(function):
 			if equivalent(['statement', 'model'], function.keys()):

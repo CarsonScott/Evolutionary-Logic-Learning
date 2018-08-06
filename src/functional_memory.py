@@ -1,6 +1,6 @@
-from function_language import *
+from dictionary import *
 
-class FunctionMemory(Function):
+class FunctionMemory(Dictionary):
 	def keys(self):
 		keys = []
 		for i in super().keys():

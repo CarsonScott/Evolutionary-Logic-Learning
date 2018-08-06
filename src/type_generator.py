@@ -1,4 +1,5 @@
 from dictionary import *
+from topology import *
 from lib.relations import *
 
 def equivalence(X,Y):
@@ -11,24 +12,23 @@ def difference(X,Y):
 	for i in range(len(X)):
 		Z.append(X[i] - Y[i])
 	return Z
-
 def conjunction(X):
 	return False not in X
 def disjunction(X):
 	return True in X
-
-def apply_functions(x, F):
+def apply(x, F):
 	Y = []
 	for f in F:
 		Y.append(f(x))
 	return Y
 
-class TypeGenerator(Dictionary):
+class Category(Dictionary):
 	def __init__(self, objects, functions=None):
 		self['objects'] = objects
+		self['morphisms'] = None
 		self['functions'] = functions
-		self['comparison'] = equivalence
-		self['decision'] = conjunction
+		self['comparison function'] = equivalence
+		self['decide'] = conjunction
 		self['learning'] = True
 
 	def __getitem__(self, key):
@@ -81,6 +81,7 @@ class TypeGenerator(Dictionary):
 
 	def get_models(self):
 		if 'models' not in self.keys():
+			
 			groups = self.get_groups()
 			models = []	
 			functions = self['functions']
@@ -102,7 +103,6 @@ class TypeGenerator(Dictionary):
 		object2 = self['objects'][index2]
 		model1 = []
 		model2 = []
-
 		functions = self['functions']
 		if functions == None:
 			model1 = object1
@@ -129,19 +129,20 @@ class TypeGenerator(Dictionary):
 					self.compute(i,j)
 		return self.get_models()
 
+	def apply(self, x):
+		return apply(x, self['functions'])
+
 	def __call__(self, x):
-		x = apply_functions(x, self['functions'])
+		x = apply(x, self['functions'])
 		models = self.get_models()
 		groups = self.get_groups()
 		for i in range(len(models)):
 			model = models[i]
-			if model == x:
-				return i
+			if model == x:return i
 		if self['learning']:
 			self['groups'].append(x)
 			self['models'].append(x)
 			return len(self['groups'])-1
-
 
 def f1(x):
 	return isinstance(x, int)
@@ -152,7 +153,7 @@ def f3(x):
 def f4(x):
 	return isinstance(x, list)
 def f5(x):
-	return 'a' in str(x)
+	return x == 0
 def f6(x):
 	if f1(x):
 		return x >= 0
@@ -170,12 +171,26 @@ def RAND():
 		value = [RAND() for i in range(rr(10))]
 	return value
 
-objects = [RAND() for i in range(100)]
 functions = [f1, f2, f3, f4, f5, f6]
+examples = [RAND() for i in range(100)]
 
-generator = TypeGenerator(objects, functions)
-models = generator.generate()
+category = Category(examples, functions)
+category(examples)
 
-examples = [RAND() for i in range(25)]
-types = [generator(x) for x in examples]
-print(types)
+trials = [RAND() for i in range(25)]
+types = [category(x) for x in trials]
+groups = category.get_groups()
+
+memory = Topology([str(i) for i in range(10)])
+for i in memory.keys():
+	X = memory.keys()
+	x = X[rr(len(X))]
+	F = ['f','g', 'h']
+	f = F[rr(len(F))]
+	memory.set_path(i,x,f)
+
+print(memory.get_paths())
+for i in memory.keys():
+	print(i, '\n	', memory.get_sources(i), '\n	',memory.get_targets(i))
+	
+	

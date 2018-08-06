@@ -1,8 +1,6 @@
-from functional_memory import *
-from lib.relations import *
+from function_language import *
 
-class Topology(FunctionMemory):
-
+class Topology(Function):
 	def __init__(self, objects=[]):
 		super().__init__()
 		self.set_dependent('objects', [])
@@ -79,3 +77,51 @@ class Topology(FunctionMemory):
 				visited = union(visited, V)
 		if root: return reachable
 		return reachable, visited
+
+	def set_statement(self, statement):
+		self['.statements'].append(statement)
+	
+	def get_statements(self):
+		return self.get_dependent('statements')
+	
+	def get_outputs(self):
+		outputs = self.get_dependent('outputs')
+		return self.get_values(outputs)
+
+	def set_outputs(self, outputs):
+		return self.set_dependent('outputs', outputs)
+
+	def get_inputs(self):
+		return self.get_dependent('inputs')
+
+	def set_inputs(self, inputs):
+		self.set_dependent('inputs', inputs)
+
+	def compile_inputs(self):
+		keys = self.get_inputs()
+		values = []
+		for i in keys:
+			values.append(self[i])
+		return values
+
+	def compile_outputs(self):
+		keys = self.get_outputs()
+		values = []
+		for i in keys:
+			value = self[i]
+			values.append(value)
+		return values
+
+	def store_inputs(self, inputs):
+		keys = self.get_inputs()
+		index = 0
+		for i in keys:	
+			self[i] = inputs[index]
+			index += 1
+	
+	def execute(self, function):
+		if self.has(function):
+			function = self[function]
+		return super().execute(function)
+
+	
