@@ -3,8 +3,9 @@ from control_flow import *
 class AbstractSyntax(PathSelector):
 	def __init__(self):
 		super().__init__()
+		
 		keys = ['statement', 'open', 'close', 'lefthand', 'righthand', 'relation']
-		self.set_objects(keys, keys)
+		for i in keys:self.set_object(i)
 		self.set_path('statement', 'open')
 		self.set_path('open', 'lefthand')
 		self.set_path('lefthand', 'relation')
@@ -16,33 +17,34 @@ class AbstractSyntax(PathSelector):
 
 	def parse(self, statement):
 		s = list(statement.split(' '))
-		if self.has(statement):
-			return self[statement]
 		if '-->' in s:
 			i = s.index('-->')
 			left_hand = s[0:i]
 			right_hand = s[i+1:len(s)]
-			left_hand = merge('', left_hand)
-			right_hand = merge('', right_hand)
+			left_hand = merge(' ', left_hand)
+			right_hand = merge(' ', right_hand)
+			left_hand = self.parse(left_hand)
+			right_hand = self.parse(right_hand)
 
-			left_hand =self.parse(left_hand)
-			right_hand =self.parse(right_hand)
-			
-			return left_hand, right_hand
-		return
+			if not isinstance(left_hand, tuple):
+				left_hand = tuple([left_hand])
+			if not isinstance(right_hand, tuple):
+				right_hand = tuple([right_hand])
+			return left_hand + right_hand
+		return statement
 
 
 ast = AbstractSyntax()
 ast.set_function(random_choice)
 variables = list('abcdefghijklmnopqrstuvwxyz')
-ast.set_objects(variables, variables)
+for i in variables:ast.set_object(i)
 
 relations = [' --> ']
 assignments = []
 assigned = []
 string = ''
 
-for i in range(500):
+for i in range(100):
 	y = ast()[0]
 	x = None
 	if y == 'lefthand' or y == 'righthand':
@@ -53,6 +55,7 @@ for i in range(500):
 		x = relations[rr(len(relations))]
 	if y == 'open' or y == 'close':
 		x = ''
+	print(y)
 	if x != None:
 		string += x
 	else:
@@ -64,14 +67,13 @@ for i in range(500):
 		assignments = []
 		string = ''
 
-
 for i in assigned:
-	sources = ast.get_sources(i)
-	if sources == None:sources = []
-	targets = ast.get_targets(i)
-	if targets == None:targets = []
 	key = str(i)
-	print('('+merge('.', sources)+') --> |' + key + '| --> ('+ merge('.', targets)+')')
-
-
+	sources = ast.get_sources(i)
+	if sources == None:
+		sources = []
+	targets = ast.get_targets(i)
+	if targets == None:
+		targets = []
+	print('<' + merge(',', sources) + '> ' + key + ' <' + merge(',', targets) + '>')
 print(ast.get_interface())

@@ -35,7 +35,6 @@ def associate(*X):
 		return Y[0]
 	return Matrix(Y)
 def distribute(*X):
-
 	v = X[0]
 	Y = Matrix()
 	for j in range(1, len(X)):

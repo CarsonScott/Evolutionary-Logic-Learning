@@ -101,53 +101,53 @@ def DIV(X):
 	if Xj != 0:
 		return Xi / Xj
 
-class Function:
-	def __init__(self, operator, inputs, defaults=dict()):
-		self.function = operator
-		self.max_size = inputs
-		self.constant = {}
+# class Function:
+# 	def __init__(self, operator, inputs, defaults=dict()):
+# 		self.function = operator
+# 		self.max_size = inputs
+# 		self.constant = {}
 
-		for i in range(self.max_size):
-			self.constant[i] = None
-			if i in defaults.keys():
-				self.constant[i] = defaults[i]
+# 		for i in range(self.max_size):
+# 			self.constant[i] = None
+# 			if i in defaults.keys():
+# 				self.constant[i] = defaults[i]
 
-		for i in range(self.max_size):
-			if i not in self.constant.keys():
-				self.constant[i] = None
+# 		for i in range(self.max_size):
+# 			if i not in self.constant.keys():
+# 				self.constant[i] = None
 
-	def __call__(self, inputs):
-		L = dict()
-		for i in range(self.max_size):
-			if self.constant[i] != None:
-				L[i] = self.constant[i]
-			elif i in range(0, len(inputs)):
-				L[i] = inputs[i]
+# 	def __call__(self, inputs):
+# 		L = dict()
+# 		for i in range(self.max_size):
+# 			if self.constant[i] != None:
+# 				L[i] = self.constant[i]
+# 			elif i in range(0, len(inputs)):
+# 				L[i] = inputs[i]
 		
-		X = list()
-		for i in range(self.max_size):
-			value = L[i]
-			X.append(value)
-		F = self.function
-		return F(X)
+# 		X = list()
+# 		for i in range(self.max_size):
+# 			value = L[i]
+# 			X.append(value)
+# 		F = self.function
+# 		return F(X)
 
-class Store:
-	def __init__(self, world, index, value):
-		self.world = world
-		self.index = index
-		self.value = value
-	def __call__(self, X):
-		i = self.world
-		j = self.index
-		x = self.value 
-		X[i][j] = x
-		return X
+# class Store:
+# 	def __init__(self, world, index, value):
+# 		self.world = world
+# 		self.index = index
+# 		self.value = value
+# 	def __call__(self, X):
+# 		i = self.world
+# 		j = self.index
+# 		x = self.value 
+# 		X[i][j] = x
+# 		return X
 
-class Retrieve:
-	def __init__(self, world, index):
-		self.world = world
-		self.index = index
-	def __call__(self, X):
-		i = self.world
-		j = self.index
-		return X[i][j] 
+# class Retrieve:
+# 	def __init__(self, world, index):
+# 		self.world = world
+# 		self.index = index
+# 	def __call__(self, X):
+# 		i = self.world
+# 		j = self.index
+# 		return X[i][j] 

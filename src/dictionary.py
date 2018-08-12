@@ -28,6 +28,7 @@ class List(list):
 		if iterable(value):
 			return super().__add__(value)
 		else: self + [value]
+
 	def __sub__(self, value):
 		if iterable(value):
 			for v in value:
@@ -53,6 +54,10 @@ class Dictionary(Dict):
 					self + (i, value[i])
 				else:
 					self + (i, value)
+		elif isinstance(key, Dictionary):
+			for i in key.keys():
+				self[i] = key[i]
+
 		else:self[key] = value
 		return self
 	def __sub__(self, key):

@@ -12,7 +12,6 @@ class UNKNOWN:
 
 unknown = UNKNOWN()
 
-
 def get_type(object):
 	if identify(object) == 'tuple':
 		output = 'function'
@@ -163,12 +162,12 @@ def create_template(statement=None):
 			raise Exception('\nScriptError: "' + str(statement) + '" is not recognized as a statement.\n')
 	return template
 
-class Function(FunctionMemory):
+class Function(MemorySpace):
 
 	def __init__(self, statement='', inputs=[]):
 		super().__init__()
-		self.set_dependent('template', create_template(statement))
-		self.set_dependent('inputs', inputs)
+		self['template'] = create_template(statement)
+		self['inputs'] = inputs
 
 	def __call__(self, *X):
 		self.update(X)

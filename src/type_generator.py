@@ -81,7 +81,6 @@ class Category(Dictionary):
 
 	def get_models(self):
 		if 'models' not in self.keys():
-			
 			groups = self.get_groups()
 			models = []	
 			functions = self['functions']
