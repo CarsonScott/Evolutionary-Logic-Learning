@@ -29,7 +29,8 @@ class Memory(Schema):
 
 	def compute(self, key, data):
 		c = isinstance(data, Collection)
-		data = list(data)
+		if isinstance(data, list):
+			data = list(data)
 		if isinstance(data, list):
 			data = self.get_all(data)
 			if len(data) == 1:
@@ -49,7 +50,6 @@ class Memory(Schema):
 				output.append(y)
 			return output
 		else:
-			print(data, self[key])
 			return Compute(self[key], data)
 
 

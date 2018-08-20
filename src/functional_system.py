@@ -19,60 +19,45 @@ class Map(Template):
 			return self[x]
 		else:return Unknown()
 
-class Experiment(Template):
-	def __init__(self, map):
-		self['map'] = map
-		self['state'] = []
-		self['input'] = [] 
-		self['output'] = [] 
+# m = Map()
+# m.map(3, 1)
+# m.map(3, 2)
 
-	def __call__(self, inputs):
-		functions = self['functions']
-		state = []
-		for i in range(len(functions)):
-			f = functions[i]
-			y = f(inputs)
-			state.append(y)
-		self['state']
+# def add(x,y):
+# 	return x+y
+# def mult(x,y):
+# 	return x*y
+# def div(x,y):
+# 	return float(x/y)
+# def sub(x,y):
+# 	return x-y
 
-m = Map()
-m.map(3, 1)
-m.map(3, 2)
-print(3)
+# memory = Memory()
+# memory.set('x', 10, 'y', 3, 'function', Function, 'int', int, 'float', float, 'str', str, 'list', list)
 
-def add(x,y):
-	return x+y
-def mult(x,y):
-	return x*y
-def div(x,y):
-	return float(x/y)
-def sub(x,y):
-	return x-y
+# # Base functions
+# memory.compose('f', [f, 'int', 'int'])
+# memory.compose('g', [g, 'int', 'str'])
+# memory.compose('h', [h, 'str', 'int'])
+# memory.compose('add', [add, ['int', 'int'], 'int'])
+# memory.compose('sub', [sub, ['int', 'int'], 'int'])
+# memory.compose('mult', [mult, ['int', 'int'], 'int'])
+# memory.compose('div', [div, ['int', 'int'], 'float'])
 
-memory = Memory()
-memory.set('x', 10, 'y', 3, 'function', Function, 'int', int, 'float', float, 'str', str, 'list', list)
+# # Composite functions
+# memory.compose('h', ['f', 'g'])
 
-# Base functions
-memory.compose('f', [f, 'int', 'int'])
-memory.compose('g', [g, 'int', 'str'])
-memory.compose('h', [h, 'str', 'int'])
+# # Sequence function
+# memory.set('seq', ['add', 'mult', 'div', 'sub'])
 
-# Composite functions
-memory.compose('t', ['tree', 'function', 'list'])
-memory.compose('add', [add, ['int', 'int'], 'int'])
-memory.compose('sub', [sub, ['int', 'int'], 'int'])
-memory.compose('mult', [mult, ['int', 'int'], 'int'])
-memory.compose('div', [div, ['int', 'int'], 'float'])
-
-# Sequence function
-memory.set('seq', ['add', 'mult', 'div', 'sub'])
-
-# Function outputs
-print(memory.compute('add', Collection(['x', 'y'])))
-print(memory.compute('mult', Collection(['x', 'y'])))
-print(memory.compute('div', Collection(['x', 'y'])))
-print(memory.compute('sub', Collection(['x', 'y'])))
-print(memory.compute('seq', Collection(['x', 'y'])))
+# # Function outputs
+# print(memory.compute('add', Collection(['x', 'y'])))
+# print(memory.compute('mult', Collection(['x', 'y'])))
+# print(memory.compute('div', Collection(['x', 'y'])))
+# print(memory.compute('sub', Collection(['x', 'y'])))
+# print(memory.compute('seq', Collection(['x', 'y'])))
+# print(memory.compute('h', 1))
+# print(memory.compute('tree', 'add'))
 
 
 # memory.compose('f.g', ['f', 'g'])
