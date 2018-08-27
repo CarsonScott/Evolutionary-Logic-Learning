@@ -19,46 +19,86 @@ class Map(Template):
 			return self[x]
 		else:return Unknown()
 
-# m = Map()
-# m.map(3, 1)
-# m.map(3, 2)
 
-# def add(x,y):
-# 	return x+y
-# def mult(x,y):
-# 	return x*y
-# def div(x,y):
-# 	return float(x/y)
-# def sub(x,y):
-# 	return x-y
+	# print(system.outputs)
+# for i in system.keys():
+# 	if len(system[i].keys()) == 0:
+# 		outputs.append(i)
+# 	for j in system[i].keys():
+# 		if j in inputs:
+# 			inputs.pop(inputs.index(j))
 
-# memory = Memory()
-# memory.set('x', 10, 'y', 3, 'function', Function, 'int', int, 'float', float, 'str', str, 'list', list)
+# for i in inputs:
+# 	sig = system.get_signature(i)
+# 	sig = (1, sig[1])
+# 	system.set_signature(i, sig)
+# for i in outputs:
+# 	sig = system.get_signature(i)
+# 	sig = (sig[0], 1)
+# 	system.set_signature(i, sig)
 
-# # Base functions
-# memory.compose('f', [f, 'int', 'int'])
-# memory.compose('g', [g, 'int', 'str'])
-# memory.compose('h', [h, 'str', 'int'])
-# memory.compose('add', [add, ['int', 'int'], 'int'])
-# memory.compose('sub', [sub, ['int', 'int'], 'int'])
-# memory.compose('mult', [mult, ['int', 'int'], 'int'])
-# memory.compose('div', [div, ['int', 'int'], 'float'])
+# values = [rr(10) for i in range(len(inputs))]
+# for i in range(100):
+# 	for j in range(len(values)):
+# 		key = inputs[j]
+# 		value = values[j]
+# 		system(key, value)
+# 	print(system())
 
-# # Composite functions
-# memory.compose('h', ['f', 'g'])
 
-# # Sequence function
-# memory.set('seq', ['add', 'mult', 'div', 'sub'])
 
-# # Function outputs
-# print(memory.compute('add', Collection(['x', 'y'])))
-# print(memory.compute('mult', Collection(['x', 'y'])))
-# print(memory.compute('div', Collection(['x', 'y'])))
-# print(memory.compute('sub', Collection(['x', 'y'])))
-# print(memory.compute('seq', Collection(['x', 'y'])))
-# print(memory.compute('h', 1))
+# system = GraphSystem()
+# system.create('a', identity, 1, 1)
+# system.create('b', identity, 2, 1)
+# system.connect('a', 0, 'b', 0)
+# print()
+# print(system.schedule, system.history)
+# system('a', 4)
+# print(system.schedule, system.history)
+# system('b')
+# print(system.schedule, system.history)
+# print()
+
+m = Map()
+m.map(3, 1)
+m.map(3, 2)
+
+def add(x,y):
+	return x+y
+def mult(x,y):
+	return x*y
+def div(x,y):
+	return float(x/y)
+def sub(x,y):
+	return x-y
+
+memory = Memory()
+memory.set('x', 10, 'y', 3, 'function', Function, 'int', int, 'float', float, 'str', str, 'list', list)
+
+# Base functions
+memory.compose('f', [f, 'int', 'int'])
+memory.compose('g', [g, 'int', 'str'])
+memory.compose('h', [h, 'str', 'int'])
+memory.compose('add', [add, ['int', 'int'], 'int'])
+memory.compose('sub', [sub, ['int', 'int'], 'int'])
+memory.compose('mult', [mult, ['int', 'int'], 'int'])
+memory.compose('div', [div, ['int', 'int'], 'float'])
+
+# Composite functions
+memory.compose('h', ['f', 'g'])
+
+# Sequence function
+memory.set('seq', ['add', 'mult', 'div', 'sub'])
+
+# Function outputs
+print(memory.compute('add', Collection(['x', 'y'])))
+print(memory.compute('mult', Collection(['x', 'y'])))
+print(memory.compute('div', Collection(['x', 'y'])))
+print(memory.compute('sub', Collection(['x', 'y'])))
+print(memory.compute('seq', Collection(['x', 'y'])))
+print(memory.compute('h', 1))
+
 # print(memory.compute('tree', 'add'))
-
 
 # memory.compose('f.g', ['f', 'g'])
 # memory.compose('f.f.g', ['f', 'f.g'])

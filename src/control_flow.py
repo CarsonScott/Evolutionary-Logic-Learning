@@ -40,7 +40,7 @@ class PathSelector(Topology):
 		options = self.get_options(state)
 		index = 0
 		values = []
-		for i in :	
+		for i in options:	
 			values.append(options[index])
 			index += 1
 		return values
@@ -65,3 +65,7 @@ class PathSelector(Topology):
 		self.assign()
 		self.update(inputs)
 		return self.compute()
+
+
+ps = PathSelector()
+

@@ -136,6 +136,7 @@ class Data(Dictionary):
 class Schema(Dictionary):
 	def __init__(self):
 		super().__init__()
+
 	def create(self, data):
 		if isinstance(data, Data):
 			return data['value']
@@ -163,6 +164,7 @@ class Schema(Dictionary):
 			else:y = values[j]
 			output.append(y)
 		return output
+
 	def retrieve(self, i='keys'):
 		if i == 'keys':
 			values = self.keys()
@@ -331,25 +333,45 @@ def Recursion(X, function):
 	elif isinstance(X, Function):
 		return Retrieve(X.tree(), function)
 
-def __mul__(*X):
+def MUL(*X):
 	x = X[0]
 	Y = [x]
 	for i in range(1, len(X)):
 		x,y = Y[0], X[i]
 		# Y[0] = y
-		if iterable(x):
-			if iterable(y):
+		if isinstance(x, list):
+			if isinstance(y, list):
 				Y[0] = x + y
 			else:
 				Y[0] = x + [y]
-		elif iterable(y):
+		elif isinstance(y, list):
 			Y[0] = [x] + y
 		else:
 			Y[0] = [x,y]
 	return Y[0]
 
-print(__mul__([1,2], ))
+def ADD(*X):
+	x = X[0]
+	Y = [x]
+	for i in range(1, len(X)):
+		x,y = Y[0], X[i]
 
+		if isinstance(x, list):
+			if isinstance(y, list):
+				Y[0] = x + y
+			else:
+				Y[0] = x + [y]
+		elif isinstance(y, list):
+			Y[0] = [x] + y
+		else:
+			Y[0] = [x,y]
+	return Y[0]
+
+x = [2], [2, [3]], 2, [2, 3, [4]]
+# x = __mul__(*x)
+# x = __mul__(*x)
+# y = __mul__(*x)
+print(x)
 
 
 def Tree(X):
