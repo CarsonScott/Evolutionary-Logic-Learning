@@ -98,6 +98,10 @@ class Matrix(list):
 		return Y
 def compose(shape, value=0):
 	Y = Matrix()
+	# if not isinstance(shape, list):
+
+	if isinstance(shape, int):
+		shape = [i for i in range(shape)]
 	for i in range(len(shape)):
 		s = shape[i]
 		if iterable(s):

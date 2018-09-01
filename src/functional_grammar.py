@@ -155,9 +155,9 @@ class Agent(Dictionary):
 		for i in range(len(data)):
 			if isinstance(data[i], list) or isinstance(data[i], tuple):
 				outputs[i] = self.update(*data[i])
-			elif isinstance(data[i], Dictionary) and 'type' in data[i]:
+			elif isinstance(data[i], Dictionary):
 				outputs[i] = self.compute(data[i])
-			elif isinstance(data[i], str) and data[i] in self.keys():
+			elif data[i] in self.keys():
 				outputs[i] = self[data[i]]
 			else:
 				try:
@@ -275,7 +275,7 @@ agent['in'] = in_schema
 agent['to'] = to_schema
 agent['is'] = is_schema
 agent['if'] = if_schema
-
+agent['mul'] = mul
 def square(x):
 	return x * x
 def mul(X):
@@ -283,13 +283,16 @@ def mul(X):
 	for i in range(1, len(X)):
 		y *= X[i]
 	return y
-agent['mul'] = mul
 
 expression = '(((mul of x y) for (x in (0 to 10))) for (y in (0 to 10)))'
 model = generator(expression)
 model = transform(model, 'for of in to is if'.split())
 schema = agent.convert(model)
 
-output = agent.compute(schema)
-print(output)
-print(schema)
+try:
+	output = agent.compute(schema)
+	print(output)
+	
+
+except error:
+	input(error)

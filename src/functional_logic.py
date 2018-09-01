@@ -268,15 +268,52 @@ class Function(Template):
 	def check(self, input):
 		if isinstance(input, Collection):
 			input = input.tolist()
-		if isinstance(input, list) and isinstance(self.input(), list):
-				if len(input) == len(self.input()):
-					for i in range(len(input)):
-						if isinstance(input[i], self.input()[i]):
-							return False
-					return True
-		elif isinstance(input, self.input()):
+		if not isinstance(input, list):
+			input = [input]
+		constraints = self.input()
+		print(input, constraints)
+		if not isinstance(constraints, list):
+			constraints = [constraints]
+
+		if len(input) == len(constraints):
+			for i in range(len(input)):
+				if callable(constraints[i]):
+					if not constraints[i](input[i]):
+						return False
+				elif isinstance(constraints[i], type):
+					if not isinstance(input[i], constraints[i]):
+						return False
 			return True
 		return False
+	def confirm(self, output):
+		if isinstance(output, Collection):
+			output = output.tolist()
+		if not isinstance(output, list):
+			output = [output]
+		constraints = self.output()
+		print(output, constraints)
+		if not isinstance(constraints, list):
+			constraints = [constraints]
+
+		if len(output) == len(constraints):
+			for i in range(len(output)):
+				if isinstance(constraints[i], type):
+					if not isinstance(output[i], constraints[i]):
+						return False
+				elif callable(constraints[i]):
+					if not constraints[i](output[i]):
+						return False
+			return True
+		return False
+		# if isinstance(input, list) and isinstance(self.input(), list):
+		# 		if len(input) == len(self.input()):
+		# 			for i in range(len(input)):
+		# 				if isinstance(input[i], self.input()[i]):
+		# 					return False
+		# 			return True
+		# elif isinstance(input, self.input()):
+		# 	return True
+		# return False
 
 	def compute(self, input):
 		if self.type('function') != Composite:
@@ -285,7 +322,7 @@ class Function(Template):
 					x = input.tolist()
 					output = self['function'](*x)
 				else:output = self['function'](input)
-				if isinstance(output, self.output()):
+				if self.confirm(output):
 					return output
 				else:raise Exception('Invalid output type')
 			else:raise Exception('Invalid input type: ' + str(type(input)) + ' (should be ' + str(self.input()) + ')')
@@ -293,7 +330,7 @@ class Function(Template):
 			input = self['input'].compute(input)
 			if isinstance(input, self.input()):
 				output = self['output'].compute(input)
-				if isinstance(output, self.output()):
+				if self.confirm(output):
 					return output
 				else:raise Exception('Invalid output type')
 			else:raise Exception('Invalid input type: ' + str(type(input)) + ' (should be ' + str(self.output()) + ')')
